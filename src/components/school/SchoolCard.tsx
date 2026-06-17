@@ -5,7 +5,6 @@ import { School } from '@/types';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { dataService } from '@/services/dataService';
-import { cn } from '@/lib/utils';
 
 interface SchoolCardProps {
   school: School;
@@ -16,7 +15,6 @@ interface SchoolCardProps {
 export const SchoolCard = ({ school, index = 0, variant = 'default' }: SchoolCardProps) => {
   const navigate = useNavigate();
   const philosophers = dataService.getPhilosophersBySchool(school.id);
-  const works = dataService.getWorksBySchool(school.id);
 
   const handleClick = () => {
     navigate(`/school/${school.id}`);

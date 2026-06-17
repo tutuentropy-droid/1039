@@ -5,7 +5,6 @@ import { Philosopher } from '@/types';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { dataService } from '@/services/dataService';
-import { cn } from '@/lib/utils';
 
 interface PhilosopherCardProps {
   philosopher: Philosopher;

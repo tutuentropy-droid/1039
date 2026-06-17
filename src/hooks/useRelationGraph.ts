@@ -42,6 +42,7 @@ export const useRelationGraph = () => {
   const [dimensions, setDimensions] = useState({ width: 900, height: 600 });
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const handleNodeClickRef = useRef<(nodeId: string) => void>(() => {});
 
   const graphData = useMemo(() => {
     const schools = dataService.getAllSchools();
@@ -190,7 +191,7 @@ export const useRelationGraph = () => {
     })
     .on('click', function(event, d) {
       event.stopPropagation();
-      handleNodeClick(d.id);
+      handleNodeClickRef.current(d.id);
     });
 
     simulation.on('tick', () => {
@@ -239,6 +240,10 @@ export const useRelationGraph = () => {
       clearPath();
     }
   }, [pathStartId, pathEndId, setPathStart, setPathEnd, clearPath]);
+
+  useEffect(() => {
+    handleNodeClickRef.current = handleNodeClick;
+  }, [handleNodeClick]);
 
   const handleBackgroundClick = useCallback(() => {
     setSelectedNode(null);

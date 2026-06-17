@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ZoomIn, ZoomOut, Maximize2, Layers } from 'lucide-react';
 import { useEvolutionTree } from '@/hooks/useEvolutionTree';
@@ -6,7 +6,7 @@ import { TreeNode } from './TreeNode';
 import { TreeLink } from './TreeLink';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { DYNASTY_OPTIONS, DynastyPeriod } from '@/types';
+import { DYNASTY_OPTIONS, DynastyPeriod, School } from '@/types';
 import { useAppStore } from '@/store';
 import { cn } from '@/lib/utils';
 
@@ -60,7 +60,7 @@ export const EvolutionTree = ({ onSchoolSelect }: EvolutionTreeProps) => {
   );
 
   const handleClick = useCallback(
-    (school: any) => {
+    (school: School) => {
       handleNodeClick(school);
       if (onSchoolSelect && !selectedSchool) {
         onSchoolSelect(school.id);
@@ -145,7 +145,7 @@ export const EvolutionTree = ({ onSchoolSelect }: EvolutionTreeProps) => {
             { period: '魏晋', y: 500 },
             { period: '隋唐', y: 600 },
             { period: '宋明', y: 800 },
-          ].map((era, idx) => (
+          ].map((era) => (
             <div
               key={era.period}
               className="flex items-center gap-2"

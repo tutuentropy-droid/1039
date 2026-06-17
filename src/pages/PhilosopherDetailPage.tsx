@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { dataService } from '@/services/dataService';
+import { RELATION_TYPE_LABELS, RELATION_TYPE_COLORS } from '@/types';
 
 const PhilosopherDetailPage = () => {
   const navigate = useNavigate();
@@ -215,9 +216,81 @@ const PhilosopherDetailPage = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-ink/60 mb-4">
-                    探索这位哲学家与其他思想家、流派之间的思想传承关系
-                  </p>
+                  {philosopher.relations && philosopher.relations.length > 0 ? (
+                    <div className="space-y-3 mb-4">
+                      {philosopher.relations.map((rel) => {
+                        const isSource = rel.sourceId === p.id;
+                        const otherEntityId = isSource ? rel.targetId : rel.sourceId;
+                        const otherEntityType = isSource ? rel.targetType : rel.sourceType;
+                        const relatedPhilosopher =
+                          otherEntityType === 'philosopher'
+                            ? dataService.getPhilosopherById(otherEntityId)
+                            : null;
+                        const relatedSchool =
+                          otherEntityType === 'school'
+                            ? dataService.getSchoolById(otherEntityId)
+                            : null;
+                        const relationLabel = RELATION_TYPE_LABELS[rel.relationType];
+                        const relationColor = RELATION_TYPE_COLORS[rel.relationType];
+
+                        return (
+                          <motion.div
+                            key={rel.id}
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="p-3 rounded-lg border border-stone-200 hover:bg-stone-50 transition-colors"
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              <span
+                                className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium text-white"
+                                style={{ backgroundColor: relationColor }}
+                              >
+                                {relationLabel}
+                              </span>
+                              {isSource ? (
+                                <span className="text-xs text-ink/50">→ 影响</span>
+                              ) : (
+                                <span className="text-xs text-ink/50">← 受影响</span>
+                              )}
+                            </div>
+                            {relatedPhilosopher && (
+                              <div
+                                className="cursor-pointer hover:text-ochre transition-colors"
+                                onClick={() => navigate(`/philosopher/${relatedPhilosopher.id}`)}
+                              >
+                                <p className="font-medium text-ink text-sm">
+                                  {relatedPhilosopher.name}
+                                </p>
+                                <p className="text-xs text-ink/50">
+                                  {relatedPhilosopher.dynasty}
+                                </p>
+                              </div>
+                            )}
+                            {relatedSchool && (
+                              <div
+                                className="cursor-pointer hover:text-ochre transition-colors"
+                                onClick={() => navigate(`/school/${relatedSchool.id}`)}
+                              >
+                                <p className="font-medium text-ink text-sm">
+                                  {relatedSchool.name}
+                                </p>
+                                <p className="text-xs text-ink/50">
+                                  {relatedSchool.period}
+                                </p>
+                              </div>
+                            )}
+                            <p className="text-xs text-ink/60 mt-2 leading-relaxed">
+                              {rel.description}
+                            </p>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-ink/60 mb-4">
+                      暂无记录的思想关系
+                    </p>
+                  )}
                   <Button
                     variant="outline"
                     className="w-full"

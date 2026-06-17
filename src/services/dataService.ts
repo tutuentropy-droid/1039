@@ -2,7 +2,8 @@ import { schools, getSchoolById, getSchoolsByDynasty, getMainSchools, getChildSc
 import { philosophers, getPhilosopherById, getPhilosophersBySchool } from '@/data/philosophers';
 import { works, getWorkById, getWorksByAuthor, getWorksBySchool } from '@/data/works';
 import { relations, getRelationsByEntity, getRelationsByType, getPathBetweenEntities } from '@/data/relations';
-import { School, Philosopher, Work, Relation, DynastyPeriod } from '@/types';
+import { timelineEvents, getTimelineEventsByPhilosopher, getTimelineEventsBySchool } from '@/data/timeline';
+import { School, Philosopher, Work, Relation, DynastyPeriod, TimelineEvent } from '@/types';
 
 export const dataService = {
   getAllSchools: (): School[] => schools,
@@ -79,5 +80,51 @@ export const dataService = {
            p.coreIdeas.some(idea => idea.toLowerCase().includes(lowerTerm))
     );
     return { schools: matchedSchools, philosophers: matchedPhilosophers };
+  },
+
+  getAllTimelineEvents: (): TimelineEvent[] => timelineEvents,
+  getTimelineEventsByPhilosopher,
+  getTimelineEventsBySchool,
+
+  getFilteredTimelineEvents: (period: DynastyPeriod, schoolIds: string[]): TimelineEvent[] => {
+    let result = timelineEvents;
+    if (period !== 'all') {
+      result = result.filter((event) => {
+        if (event.schoolId) {
+          const school = getSchoolById(event.schoolId);
+          return school?.dynasty === period;
+        }
+        if (event.philosopherId) {
+          const philosopher = getPhilosopherById(event.philosopherId);
+          const dynastyToPeriodMap: Record<string, DynastyPeriod> = {
+            '春秋': 'pre-qin',
+            '战国': 'pre-qin',
+            '春秋末战国初': 'pre-qin',
+            '西汉': 'han',
+            '东汉': 'han',
+            '两汉': 'han',
+            '曹魏': 'wei-jin',
+            '魏晋': 'wei-jin',
+            '西晋': 'wei-jin',
+            '东晋': 'wei-jin',
+            '唐代': 'tang',
+            '隋唐': 'tang',
+            '北宋': 'song-ming',
+            '南宋': 'song-ming',
+            '宋代': 'song-ming',
+            '明代': 'song-ming',
+            '宋明': 'song-ming',
+          };
+          if (philosopher) {
+            return dynastyToPeriodMap[philosopher.dynasty] === period;
+          }
+        }
+        return false;
+      });
+    }
+    if (schoolIds.length > 0) {
+      result = result.filter((event) => event.schoolId && schoolIds.includes(event.schoolId));
+    }
+    return result;
   },
 };

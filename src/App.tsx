@@ -5,6 +5,8 @@ import Home from '@/pages/Home';
 import SchoolDetailPage from '@/pages/SchoolDetailPage';
 import RelationExplorer from '@/pages/RelationExplorer';
 import PhilosopherDetailPage from '@/pages/PhilosopherDetailPage';
+import PhilosophersPage from '@/pages/PhilosophersPage';
+import TimelinePage from '@/pages/TimelinePage';
 
 function NotFound() {
   return (
@@ -27,6 +29,8 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/school/:id" element={<SchoolDetailPage />} />
             <Route path="/philosopher/:id" element={<PhilosopherDetailPage />} />
+            <Route path="/philosophers" element={<PhilosophersPage />} />
+            <Route path="/timeline" element={<TimelinePage />} />
             <Route path="/relations" element={<RelationExplorer />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
