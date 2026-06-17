@@ -1,0 +1,172 @@
+import { School } from '@/types';
+
+export const schools: School[] = [
+  {
+    id: 'confucianism',
+    name: '儒家',
+    period: '先秦',
+    dynasty: 'pre-qin',
+    description: '儒家是中国古代最有影响的思想流派之一，由孔子创立，以仁、义、礼、智、信为核心价值观，强调道德修养、礼乐教化和仁政德治。儒家思想对中国文化、政治、社会产生了深远影响，成为中华文明的精神支柱。',
+    coreIdeas: ['仁', '义', '礼', '智', '信', '中庸', '克己复礼', '德治'],
+    color: '#8B4513',
+    icon: 'book-open',
+    positionX: 150,
+    positionY: 200,
+  },
+  {
+    id: 'taoism',
+    name: '道家',
+    period: '先秦',
+    dynasty: 'pre-qin',
+    description: '道家以"道"为核心概念，主张道法自然、无为而治，追求逍遥自在的精神境界。由老子创立，庄子发展，强调顺应自然、返璞归真，对中国哲学、艺术、养生文化影响深远。',
+    coreIdeas: ['道', '无为', '自然', '逍遥', '齐物', '返璞归真'],
+    color: '#1E4D6B',
+    icon: 'cloud',
+    positionX: 350,
+    positionY: 200,
+  },
+  {
+    id: 'legalism',
+    name: '法家',
+    period: '先秦',
+    dynasty: 'pre-qin',
+    description: '法家是先秦诸子百家中主张以法治国的重要学派，强调法、术、势相结合，主张强化君主集权，厉行赏罚，奖励耕战。法家思想为秦统一六国提供了理论基础，对中国古代政治制度影响深远。',
+    coreIdeas: ['法治', '集权', '赏罚', '耕战', '势治', '术治'],
+    color: '#A52A2A',
+    icon: 'scale',
+    positionX: 550,
+    positionY: 200,
+  },
+  {
+    id: 'mohism',
+    name: '墨家',
+    period: '先秦',
+    dynasty: 'pre-qin',
+    description: '墨家由墨子创立，主张"兼相爱，交相利"，提倡兼爱、非攻、尚贤、节用。墨家是先秦时期重要的思想流派，其思想充满博爱精神和实用理性，在逻辑学、自然科学方面也有重要贡献。',
+    coreIdeas: ['兼爱', '非攻', '尚贤', '节用', '天志', '明鬼'],
+    color: '#2E7D32',
+    icon: 'heart',
+    positionX: 750,
+    positionY: 200,
+  },
+  {
+    id: 'logicians',
+    name: '名家',
+    period: '先秦',
+    dynasty: 'pre-qin',
+    description: '名家是先秦时期以思维形式、名实关系为研究对象的学派，代表人物有惠施、公孙龙。名家善于辩论，着重分析名词概念，探讨"名"与"实"的关系，对中国古代逻辑学的发展有重要贡献。',
+    coreIdeas: ['名实之辨', '白马非马', '离坚白', '合同异'],
+    color: '#7B1FA2',
+    icon: 'message-circle',
+    positionX: 950,
+    positionY: 200,
+  },
+  {
+    id: 'yin-yang',
+    name: '阴阳家',
+    period: '先秦',
+    dynasty: 'pre-qin',
+    description: '阴阳家是先秦时期以阴阳五行学说为核心的学派，代表人物为邹衍。阴阳家将阴阳观念与五行学说相结合，用以解释自然现象和社会变迁，提出"五德终始"说，对中国古代宇宙观、天文学、医学影响深远。',
+    coreIdeas: ['阴阳', '五行', '五德终始', '天人感应'],
+    color: '#F57C00',
+    icon: 'sun',
+    positionX: 1150,
+    positionY: 200,
+  },
+  {
+    id: 'huang-lao',
+    name: '黄老之学',
+    period: '两汉',
+    dynasty: 'han',
+    description: '黄老之学是西汉初期盛行的思想流派，以黄帝和老子为依托，兼采道家、法家思想，主张清静无为、与民休息。汉初统治者采用黄老之学，造就了"文景之治"的盛世局面。',
+    coreIdeas: ['清静无为', '与民休息', '刑德并用', '因循为用'],
+    color: '#5D4037',
+    icon: 'feather',
+    positionX: 350,
+    positionY: 400,
+    parentId: 'taoism',
+  },
+  {
+    id: 'han-confucianism',
+    name: '汉代经学',
+    period: '两汉',
+    dynasty: 'han',
+    description: '汉代经学是儒家思想在汉代的新发展，董仲舒提出"罢黜百家，独尊儒术"，将儒家思想与阴阳家、法家思想融合，建立了以"天人感应"为核心的神学化儒学体系，成为汉代官方意识形态。',
+    coreIdeas: ['独尊儒术', '天人感应', '大一统', '三纲五常'],
+    color: '#6D4C41',
+    icon: 'scroll',
+    positionX: 150,
+    positionY: 400,
+    parentId: 'confucianism',
+  },
+  {
+    id: 'xuan-xue',
+    name: '魏晋玄学',
+    period: '魏晋',
+    dynasty: 'wei-jin',
+    description: '魏晋玄学是魏晋时期的主要哲学思潮，以《老子》《庄子》《周易》为"三玄"，探讨有无、本末、体用、言意等抽象哲学问题。代表人物有何晏、王弼、嵇康、阮籍、郭象等。',
+    coreIdeas: ['贵无', '自然', '得意忘言', '名教与自然'],
+    color: '#455A64',
+    icon: 'wind',
+    positionX: 350,
+    positionY: 600,
+    parentId: 'taoism',
+  },
+  {
+    id: 'buddhism',
+    name: '中国佛学',
+    period: '隋唐',
+    dynasty: 'tang',
+    description: '佛教自汉代传入中国，经过与中国本土文化的融合，在隋唐时期达到鼎盛，形成了天台宗、华严宗、禅宗等具有中国特色的佛教宗派。中国佛学对中国哲学、艺术、文学产生了深远影响。',
+    coreIdeas: ['缘起性空', '顿悟成佛', '平常心是道', '万法唯心'],
+    color: '#FFA000',
+    icon: 'lotus',
+    positionX: 550,
+    positionY: 600,
+  },
+  {
+    id: 'neo-confucianism',
+    name: '程朱理学',
+    period: '宋明',
+    dynasty: 'song-ming',
+    description: '程朱理学是宋代儒家思想的新发展，由二程（程颢、程颐）创立，朱熹集其大成。理学以"理"为最高范畴，主张"存天理，灭人欲"，强调格物致知、修身齐家治国平天下，成为宋元明清的官方哲学。',
+    coreIdeas: ['天理', '格物致知', '存理灭欲', '性即理'],
+    color: '#795548',
+    icon: 'compass',
+    positionX: 150,
+    positionY: 800,
+    parentId: 'confucianism',
+    branchFrom: 'han-confucianism',
+  },
+  {
+    id: 'lu-wang',
+    name: '陆王心学',
+    period: '宋明',
+    dynasty: 'song-ming',
+    description: '陆王心学是宋明理学的重要分支，由南宋陆九渊创立，明代王阳明发展完成。心学主张"心即理"，强调"发明本心"、"致良知"、"知行合一"，对中国晚期封建社会思想解放有重要意义。',
+    coreIdeas: ['心即理', '致良知', '知行合一', '发明本心'],
+    color: '#8D6E63',
+    icon: 'brain',
+    positionX: 350,
+    positionY: 800,
+    parentId: 'confucianism',
+    branchFrom: 'neo-confucianism',
+  },
+];
+
+export const getSchoolById = (id: string): School | undefined => {
+  return schools.find(school => school.id === id);
+};
+
+export const getSchoolsByDynasty = (dynasty: string): School[] => {
+  if (dynasty === 'all') return schools;
+  return schools.filter(school => school.dynasty === dynasty);
+};
+
+export const getMainSchools = (): School[] => {
+  return schools.filter(school => !school.parentId);
+};
+
+export const getChildSchools = (parentId: string): School[] => {
+  return schools.filter(school => school.parentId === parentId);
+};
