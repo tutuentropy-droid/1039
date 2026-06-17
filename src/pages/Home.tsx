@@ -52,9 +52,9 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       <section className="relative overflow-hidden py-20 sm:py-28">
-        <div className="absolute inset-0 bg-gradient-to-br from-ochre/5 via-transparent to-indigo/5" />
+        <div className="absolute inset-0 bg-gradient-to-br from-ochre/5 via-transparent to-indigo-cn/5" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-ochre/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-cn/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -70,7 +70,7 @@ const Home = () => {
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-ink mb-6 leading-tight">
               中国哲学
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-ochre via-cinnabar to-indigo">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-ochre via-cinnabar to-indigo-cn">
                 {' '}思想长河{' '}
               </span>
               探索
@@ -121,7 +121,7 @@ const Home = () => {
           >
             {mainSchools.map((school) => (
               <motion.div key={school.id} variants={itemVariants}>
-                <SchoolCard school={school} onClick={() => navigate(`/school/${school.id}`)} />
+                <SchoolCard school={school} />
               </motion.div>
             ))}
           </motion.div>
@@ -178,8 +178,8 @@ const Home = () => {
           >
             {features.map((feature, index) => {
               const Icon = feature.icon;
-              const colors = ['from-ochre/20 to-ochre/5', 'from-indigo/20 to-indigo/5', 'from-cinnabar/20 to-cinnabar/5'];
-              const iconColors = ['text-ochre', 'text-indigo', 'text-cinnabar'];
+              const colors = ['from-ochre/20 to-ochre/5', 'from-indigo-cn/20 to-indigo-cn/5', 'from-cinnabar/20 to-cinnabar/5'];
+              const iconColors = ['text-ochre', 'text-indigo-cn', 'text-cinnabar'];
 
               return (
                 <motion.div key={feature.title} variants={itemVariants}>
@@ -208,10 +208,10 @@ const Home = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="relative bg-gradient-to-br from-ochre/10 via-paper to-indigo/10 rounded-2xl p-8 sm:p-12 border border-ochre/10 text-center overflow-hidden"
+            className="relative bg-gradient-to-br from-ochre/10 via-paper to-indigo-cn/10 rounded-2xl p-8 sm:p-12 border border-ochre/10 text-center overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-40 h-40 bg-ochre/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-40 h-40 bg-indigo-cn/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
 
             <div className="relative">
               <h2 className="text-2xl sm:text-3xl font-bold text-ink mb-4">

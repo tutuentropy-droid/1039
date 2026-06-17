@@ -145,7 +145,7 @@ export const useRelationGraph = () => {
       .attr('fill', d => {
         if (pathStartId === d.id) return '#10B981';
         if (pathEndId === d.id) return '#F59E0B';
-        if (selectedNode === d.id) return d3.color(d.color)?.brighter(0.3) as string;
+        if (selectedNode === d.id) return d3.color(d.color)?.brighter(0.3).formatHex() || d.color;
         return d.color;
       })
       .attr('stroke', d => {

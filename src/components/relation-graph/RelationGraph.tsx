@@ -4,11 +4,10 @@ import { ArrowLeft, RefreshCw, Link2, X, ArrowRight, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useRelationGraph } from '@/hooks/useRelationGraph';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { Badge from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { RELATION_TYPE_LABELS, RELATION_TYPE_COLORS, School, Philosopher } from '@/types';
 import { dataService } from '@/services/dataService';
-import { cn } from '@/lib/utils';
 
 export const RelationGraph = () => {
   const navigate = useNavigate();
@@ -30,7 +29,7 @@ export const RelationGraph = () => {
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
-        const { width } = containerRef.current.clientWidth;
+        const { width } = containerRef.current.getBoundingClientRect();
         setDimensions({
           width: Math.max(width - 48, 600),
           height: 650,
@@ -51,6 +50,10 @@ export const RelationGraph = () => {
     return id;
   };
 
+  const getEntityDescription = (data: School | Philosopher) => {
+    return 'biography' in data ? data.description || data.biography : data.description;
+  };
+
   const handleNodeNavigate = useCallback(() => {
     if (!selectedNodeData) return;
     if (selectedNodeData.type === 'school') {
@@ -63,13 +66,13 @@ export const RelationGraph = () => {
   const getRelationLegend = () => {
     return Object.entries(RELATION_TYPE_LABELS).map(([type, label]) => (
       <div key={type} className="flex items-center gap-2">
-      <div
-        className="w-8 h-1 rounded"
-        style={{ backgroundColor: RELATION_TYPE_COLORS[type as keyof typeof RELATION_TYPE_COLORS] }}
-      />
-      <span className="text-xs text-ink/60">{label}</span>
-    </div>
-  ));
+        <div
+          className="w-8 h-1 rounded"
+          style={{ backgroundColor: RELATION_TYPE_COLORS[type as keyof typeof RELATION_TYPE_COLORS] }}
+        />
+        <span className="text-xs text-ink/60">{label}</span>
+      </div>
+    ));
   };
 
   return (
@@ -90,135 +93,129 @@ export const RelationGraph = () => {
           <div className="lg:col-span-3">
             <Card className="overflow-hidden">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Link2 className="w-5 h-5 text-ochre" />
-                  思想关系图
-                </div>
-                <div className="flex items-center gap-2">
-                  {pathStartId && pathEndId && (
-                    <Button size="sm" onClick={calculatePath}>
-                      分析关联路径
-                    </Button>
-                  )}
-                  <Button variant="ghost" size="sm" onClick={clearPath}>
+                <CardTitle className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <Link2 className="w-5 h-5 text-ochre" />
+                    思想关系图
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {pathStartId && pathEndId && (
+                      <Button size="sm" onClick={calculatePath}>
+                        分析关联路径
+                      </Button>
+                    )}
+                    <Button variant="ghost" size="sm" onClick={clearPath}>
                       <RefreshCw className="w-4 h-4" />
                     </Button>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div
-                ref={containerRef}
-                className="relative bg-gradient-to-br from-paper via-stone-50/30 to-paper"
-                onClick={handleBackgroundClick}
-              >
-                <svg
-                  ref={svgRef}
-                  width={dimensions.width}
-                  height={dimensions.height}
-                  className="w-full"
-                />
-
-                <div className="absolute top-4 left-4 bg-paper/90 backdrop-blur-sm rounded-lg p-3 border border-stone-200">
-                  <p className="text-xs font-medium text-ink/80 mb-2">关系图例</p>
-                  <div className="space-y-1">
-                    {getRelationLegend()}
                   </div>
-                </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div
+                  ref={containerRef}
+                  className="relative bg-gradient-to-br from-paper via-stone-50/30 to-paper"
+                  onClick={handleBackgroundClick}
+                >
+                  <svg
+                    ref={svgRef}
+                    width={dimensions.width}
+                    height={dimensions.height}
+                    className="w-full"
+                  />
 
-                <AnimatePresence>
-                  {(pathStartId || pathEndId) && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute top-4 right-4 bg-paper/95 backdrop-blur-sm rounded-xl p-4 border border-stone-200 shadow-xl min-w-[200px]"
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-ink">路径选择</span>
-                        <Button variant="ghost" size="sm" onClick={clearPath} className="h-6 w-6 p-0">
-                          <X className="w-3 h-3" />
-                        </Button>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                          <span className="text-sm text-ink/70">
-                            起点：
-                            <span className="font-medium text-ink ml-1">
-                              {pathStartId ? getEntityName(pathStartId) : '未选择'}</span>
-                          </span>
+                  <div className="absolute top-4 left-4 bg-paper/90 backdrop-blur-sm rounded-lg p-3 border border-stone-200">
+                    <p className="text-xs font-medium text-ink/80 mb-2">关系图例</p>
+                    <div className="space-y-1">{getRelationLegend()}</div>
+                  </div>
+
+                  <AnimatePresence>
+                    {(pathStartId || pathEndId) && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute top-4 right-4 bg-paper/95 backdrop-blur-sm rounded-xl p-4 border border-stone-200 shadow-xl min-w-[200px]"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-sm font-medium text-ink">路径选择</span>
+                          <Button variant="ghost" size="sm" onClick={clearPath} className="h-6 w-6 p-0">
+                            <X className="w-3 h-3" />
+                          </Button>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-amber-500" />
-                          <span className="text-sm text-ink/70">
-                            终点：
-                            <span className="font-medium text-ink ml-1">
-                              {pathEndId ? getEntityName(pathEndId) : '未选择'}</span>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                            <span className="text-sm text-ink/70">
+                              起点：
+                              <span className="font-medium text-ink ml-1">
+                                {pathStartId ? getEntityName(pathStartId) : '未选择'}
+                              </span>
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-amber-500" />
+                            <span className="text-sm text-ink/70">
+                              终点：
+                              <span className="font-medium text-ink ml-1">
+                                {pathEndId ? getEntityName(pathEndId) : '未选择'}
+                              </span>
                             </span>
                           </div>
                         </div>
-                      </div>
-                      {pathStartId && pathEndId && !currentPath && (
-                        <Button
-                          size="sm"
-                          className="w-full mt-3"
-                          onClick={calculatePath}
-                        >
-                          分析关联路径
-                        </Button>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                        {pathStartId && pathEndId && !currentPath && (
+                          <Button size="sm" className="w-full mt-3" onClick={calculatePath}>
+                            分析关联路径
+                          </Button>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-                <AnimatePresence>
-                  {currentPath && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute bottom-4 left-4 right-4 bg-paper/95 backdrop-blur-sm rounded-xl p-4 border border-stone-200 shadow-xl"
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-semibold text-ink">关联路径分析</h4>
-                      <Badge variant="outline">
-                        共 {currentPath.length} 层关系
-                      </Badge>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {currentPath.map((rel, idx) => (
-                        <div key={rel.id} className="flex items-center gap-2">
-                          <div className="px-2 py-1 bg-stone-100 rounded text-sm text-ink">
-                            {getEntityName(rel.sourceId)}
-                          </div>
-                          <div className="flex items-center gap-1 text-xs text-ink/50">
-                            <div
-                              className="w-4 h-0.5 rounded"
-                              style={{ backgroundColor: RELATION_TYPE_COLORS[rel.relationType] }}
-                            />
-                            <span>{RELATION_TYPE_LABELS[rel.relationType]}</span>
-                            <div
-                              className="w-4 h-0.5 rounded"
-                              style={{ backgroundColor: RELATION_TYPE_COLORS[rel.relationType] }}
-                            />
-                          </div>
-                          <div className="px-2 py-1 bg-stone-100 rounded text-sm text-ink">
-                            {getEntityName(rel.targetId)}
-                          </div>
-                          {idx < currentPath.length - 1 && (
-                            <ArrowRight className="w-4 h-4 text-ink/30 mx-1" />
-                          )}
+                  <AnimatePresence>
+                    {currentPath && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute bottom-4 left-4 right-4 bg-paper/95 backdrop-blur-sm rounded-xl p-4 border border-stone-200 shadow-xl"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="font-semibold text-ink">关联路径分析</h4>
+                          <Badge variant="outline">共 {currentPath.length} 层关系</Badge>
                         </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {currentPath.map((rel, idx) => (
+                            <div key={rel.id} className="flex items-center gap-2">
+                              <div className="px-2 py-1 bg-stone-100 rounded text-sm text-ink">
+                                {getEntityName(rel.sourceId)}
+                              </div>
+                              <div className="flex items-center gap-1 text-xs text-ink/50">
+                                <div
+                                  className="w-4 h-0.5 rounded"
+                                  style={{ backgroundColor: RELATION_TYPE_COLORS[rel.relationType] }}
+                                />
+                                <span>{RELATION_TYPE_LABELS[rel.relationType]}</span>
+                                <div
+                                  className="w-4 h-0.5 rounded"
+                                  style={{ backgroundColor: RELATION_TYPE_COLORS[rel.relationType] }}
+                                />
+                              </div>
+                              <div className="px-2 py-1 bg-stone-100 rounded text-sm text-ink">
+                                {getEntityName(rel.targetId)}
+                              </div>
+                              {idx < currentPath.length - 1 && (
+                                <ArrowRight className="w-4 h-4 text-ink/30 mx-1" />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
           <div className="space-y-6">
             <AnimatePresence mode="wait">
@@ -253,11 +250,11 @@ export const RelationGraph = () => {
                       </div>
 
                       <p className="text-sm text-ink/70 leading-relaxed mb-4">
-                        {(selectedNodeData.data as School | Philosopher).description?.substring(0, 120)}...
+                        {getEntityDescription(selectedNodeData.data).substring(0, 120)}...
                       </p>
 
                       <div className="flex flex-wrap gap-1.5 mb-4">
-                        {(selectedNodeData.data as School | Philosopher).coreIdeas?.slice(0, 4).map((idea: string) => (
+                        {selectedNodeData.data.coreIdeas.slice(0, 4).map((idea: string) => (
                           <Badge key={idea} variant="outline" className="text-xs">
                             {idea}
                           </Badge>
@@ -271,11 +268,7 @@ export const RelationGraph = () => {
                   </Card>
                 </motion.div>
               ) : (
-                <motion.div
-                key="hint"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
+                <motion.div key="hint" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
@@ -286,7 +279,7 @@ export const RelationGraph = () => {
                     <CardContent className="space-y-3">
                       <div className="flex items-start gap-3">
                         <div className="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center text-xs font-bold text-ink/60 flex-shrink-0 mt-0.5">
-                        1
+                          1
                         </div>
                         <p className="text-sm text-ink/70">
                           点击任意<span className="font-medium text-ink">流派节点</span>（大圆形）或
@@ -295,7 +288,7 @@ export const RelationGraph = () => {
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-xs font-bold text-emerald-600 flex-shrink-0 mt-0.5">
-                        2
+                          2
                         </div>
                         <p className="text-sm text-ink/70">
                           点击第一个节点作为<span className="font-medium text-emerald-600">路径起点</span>
@@ -303,7 +296,7 @@ export const RelationGraph = () => {
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center text-xs font-bold text-amber-600 flex-shrink-0 mt-0.5">
-                        3
+                          3
                         </div>
                         <p className="text-sm text-ink/70">
                           点击第二个节点作为<span className="font-medium text-amber-600">路径终点</span>
@@ -311,7 +304,7 @@ export const RelationGraph = () => {
                       </div>
                       <div className="flex items-start gap-3">
                         <div className="w-6 h-6 rounded-full bg-ochre/20 flex items-center justify-center text-xs font-bold text-ochre flex-shrink-0 mt-0.5">
-                        4
+                          4
                         </div>
                         <p className="text-sm text-ink/70">
                           点击<span className="font-medium text-ochre">分析关联路径</span>查看两节点之间的思想传承路径
@@ -350,7 +343,6 @@ export const RelationGraph = () => {
                 ))}
               </CardContent>
             </Card>
-          </div>
           </div>
         </div>
       </div>

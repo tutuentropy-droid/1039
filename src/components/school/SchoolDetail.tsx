@@ -95,7 +95,7 @@ export const SchoolDetail = ({ school }: SchoolDetailProps) => {
             </Button>
 
             <div className="flex items-center gap-6">
-              <div className="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border-3 border-white/40 shadow-2xl">
+              <div className="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border-[3px] border-white/40 shadow-2xl">
                 <span className="text-5xl font-bold text-white">{school.name.charAt(0)}</span>
               </div>
               <div>

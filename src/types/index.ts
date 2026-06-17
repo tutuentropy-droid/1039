@@ -19,10 +19,10 @@ export interface Philosopher {
   birthYear: string;
   deathYear: string;
   dynasty: string;
-  place: string;
+  place?: string;
   schoolId: string;
   biography: string;
-  description: string;
+  description?: string;
   coreIdeas: string[];
   works: string[];
   imageUrl: string;

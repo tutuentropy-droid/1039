@@ -37,7 +37,7 @@ export const PhilosopherCard = ({ philosopher, index = 0 }: PhilosopherCardProps
           <div className="flex gap-4">
             <div className="relative flex-shrink-0">
               <div
-                className="w-16 h-16 rounded-full overflow-hidden border-3 shadow-lg"
+                className="w-16 h-16 rounded-full overflow-hidden border-[3px] shadow-lg"
                 style={{ borderColor: school?.color || '#8B7355' }}
               >
                 <img

@@ -139,10 +139,7 @@ export const TreeNode = ({
             height={100}
             className="pointer-events-none"
           >
-            <div
-              xmlns="http://www.w3.org/1999/xhtml"
-              className="bg-paper/95 backdrop-blur-sm rounded-xl p-3 shadow-xl border border-stone-200"
-            >
+            <div className="bg-paper/95 backdrop-blur-sm rounded-xl p-3 shadow-xl border border-stone-200">
               <h4 className="font-bold text-ink text-sm mb-1">{school.name}</h4>
               <p className="text-xs text-ink/70 line-clamp-3 leading-relaxed">
                 {school.description.substring(0, 60)}...

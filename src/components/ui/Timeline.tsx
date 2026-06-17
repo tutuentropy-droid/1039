@@ -31,7 +31,7 @@ interface TimelineItemProps {
 const TimelineItem = ({ event, index }: TimelineItemProps) => {
   return (
     <div
-      className="relative pl-12 animate-fadeIn"
+      className="relative pl-12 animate-fade-in"
       style={{ animationDelay: `${index * 100}ms` }}
     >
       <div className="absolute left-0 w-8 h-8 rounded-full bg-paper border-2 border-ochre flex items-center justify-center shadow-md">

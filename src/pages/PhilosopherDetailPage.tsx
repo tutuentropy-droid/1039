@@ -16,6 +16,8 @@ const PhilosopherDetailPage = () => {
   }
 
   const { philosopher: p, works, school } = philosopher;
+  const description = p.description || p.biography;
+  const place = p.place || p.biography.match(/([^，。]*人)/)?.[1] || '籍贯不详';
 
   return (
     <div className="min-h-screen">
@@ -63,7 +65,7 @@ const PhilosopherDetailPage = () => {
                     </Badge>
                     <Badge variant="outline">
                       <MapPin className="w-3.5 h-3.5 mr-1" />
-                      {p.place}
+                      {place}
                     </Badge>
                   </div>
                 </div>
@@ -84,7 +86,7 @@ const PhilosopherDetailPage = () => {
                   <CardTitle>人物简介</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-ink/70 leading-relaxed text-base">{p.description}</p>
+                  <p className="text-ink/70 leading-relaxed text-base">{description}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -134,7 +136,7 @@ const PhilosopherDetailPage = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <BookOpen className="w-5 h-5 text-indigo" />
+                      <BookOpen className="w-5 h-5 text-indigo-cn" />
                       代表著作
                     </CardTitle>
                   </CardHeader>
@@ -143,7 +145,7 @@ const PhilosopherDetailPage = () => {
                       {works.map((work) => (
                         <div
                           key={work.id}
-                          className="p-4 rounded-xl border border-stone-200 hover:border-indigo/30 hover:bg-indigo/5 transition-all duration-300"
+                          className="p-4 rounded-xl border border-stone-200 hover:border-indigo-cn/30 hover:bg-indigo-cn/5 transition-all duration-300"
                         >
                           <h4 className="font-bold text-ink mb-2">{work.title}</h4>
                           <p className="text-sm text-ink/60 leading-relaxed line-clamp-3">
@@ -208,7 +210,7 @@ const PhilosopherDetailPage = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Link2 className="w-5 h-5 text-indigo" />
+                    <Link2 className="w-5 h-5 text-indigo-cn" />
                     思想关系
                   </CardTitle>
                 </CardHeader>

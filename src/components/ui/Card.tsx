@@ -42,7 +42,7 @@ export const CardTitle = ({ className, children, ...props }: PropsWithChildren<H
   </h3>
 );
 
-export const CardDescription = ({ className, children, ...props }: PropsWithChildren<HTMLParagraphElement>>) => (
+export const CardDescription = ({ className, children, ...props }: PropsWithChildren<HTMLAttributes<HTMLParagraphElement>>) => (
   <p className={cn('text-sm text-ink/60 mt-1 leading-relaxed', className)} {...props}>
     {children}
   </p>
