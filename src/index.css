@@ -93,7 +93,7 @@
     color: var(--color-ochre);
   }
 
-  .text-indigo {
+  .text-indigo-cn {
     color: var(--color-indigo);
   }
 
@@ -101,11 +101,15 @@
     color: var(--color-cinnabar);
   }
 
+  .text-vermilion {
+    color: var(--color-cinnabar);
+  }
+
   .bg-ochre {
     background-color: var(--color-ochre);
   }
 
-  .bg-indigo {
+  .bg-indigo-cn {
     background-color: var(--color-indigo);
   }
 
@@ -113,11 +117,15 @@
     background-color: var(--color-cinnabar);
   }
 
+  .bg-vermilion {
+    background-color: var(--color-cinnabar);
+  }
+
   .border-ochre {
     border-color: var(--color-ochre);
   }
 
-  .border-indigo {
+  .border-indigo-cn {
     border-color: var(--color-indigo);
   }
 
@@ -129,7 +137,7 @@
     --tw-gradient-from: var(--color-ochre);
   }
 
-  .from-indigo {
+  .from-indigo-cn {
     --tw-gradient-from: var(--color-indigo);
   }
 
@@ -141,7 +149,7 @@
     --tw-gradient-to: var(--color-ochre);
   }
 
-  .to-indigo {
+  .to-indigo-cn {
     --tw-gradient-to: var(--color-indigo);
   }
 
@@ -153,7 +161,7 @@
     --tw-gradient-via: var(--color-ochre);
   }
 
-  .via-indigo {
+  .via-indigo-cn {
     --tw-gradient-via: var(--color-indigo);
   }
 
