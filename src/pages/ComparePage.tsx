@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -107,6 +107,16 @@ const EntitySelect = ({ mode, value, onChange, placeholder, accentColor, exclude
     }
     setIsOpen(!isOpen);
   }, [isOpen, updateDropdownPosition]);
+
+  const handleTriggerKeyDown = useCallback(
+    (e: ReactKeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleToggle();
+      }
+    },
+    [handleToggle]
+  );
 
   const handleClose = useCallback(() => {
     setIsOpen(false);
@@ -250,10 +260,14 @@ const EntitySelect = ({ mode, value, onChange, placeholder, accentColor, exclude
 
   return (
     <div ref={containerRef} className="relative">
-      <button
+      <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={isOpen}
         onClick={handleToggle}
+        onKeyDown={handleTriggerKeyDown}
         className={cn(
-          'w-full flex items-center gap-3 p-4 rounded-xl border-2 bg-white transition-all text-left',
+          'w-full flex items-center gap-3 p-4 rounded-xl border-2 bg-white transition-all text-left cursor-pointer',
           isOpen ? 'border-ochre/60 ring-2 ring-ochre/20' : 'border-stone-200 hover:border-stone-300'
         )}
         style={selectedColor ? { borderColor: selectedColor + '80' } : {}}
@@ -279,9 +293,11 @@ const EntitySelect = ({ mode, value, onChange, placeholder, accentColor, exclude
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    handleClose();
                     onChange(null);
                   }}
                   className="p-1 rounded-md hover:bg-stone-100 text-ink/40 hover:text-ink/70 transition-colors"
+                  aria-label="清除选择"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -315,12 +331,15 @@ const EntitySelect = ({ mode, value, onChange, placeholder, accentColor, exclude
             <ChevronDown className="w-5 h-5 text-ink/40" />
           </>
         )}
-      </button>
+      </div>
 
       {typeof document !== 'undefined' && (
-        <AnimatePresence>
-          {isOpen && createPortal(dropdownContent, document.body)}
-        </AnimatePresence>
+        createPortal(
+          <AnimatePresence>
+            {isOpen && dropdownContent}
+          </AnimatePresence>,
+          document.body
+        )
       )}
     </div>
   );
