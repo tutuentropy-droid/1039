@@ -3,6 +3,15 @@ import { philosophers, getPhilosopherById, getPhilosophersBySchool } from '@/dat
 import { works, getWorkById, getWorksByAuthor, getWorksBySchool } from '@/data/works';
 import { relations, getRelationsByEntity, getRelationsByType, getPathBetweenEntities } from '@/data/relations';
 import { timelineEvents, getTimelineEventsByPhilosopher, getTimelineEventsBySchool } from '@/data/timeline';
+import {
+  COMPARE_DIMENSIONS,
+  CompareDimension,
+  CompareDimensionInfo,
+  CompareView,
+  getSchoolComparison,
+  getPhilosopherComparison,
+  getComparisonByEntity,
+} from '@/data/comparisons';
 import { School, Philosopher, Work, Relation, DynastyPeriod, TimelineEvent } from '@/types';
 
 export const dataService = {
@@ -127,4 +136,22 @@ export const dataService = {
     }
     return result;
   },
+
+  getCompareDimensions: (): CompareDimensionInfo[] => COMPARE_DIMENSIONS,
+
+  getSchoolComparison: (schoolId: string): CompareView | undefined => getSchoolComparison(schoolId),
+
+  getPhilosopherComparison: (philosopherId: string): CompareView | undefined =>
+    getPhilosopherComparison(philosopherId),
+
+  getComparisonByEntity: (
+    entityId: string,
+    entityType: 'philosopher' | 'school'
+  ): CompareView | undefined => getComparisonByEntity(entityId, entityType),
+
+  getComparableSchools: (): School[] =>
+    schools.filter((s) => getSchoolComparison(s.id) !== undefined),
+
+  getComparablePhilosophers: (): Philosopher[] =>
+    philosophers.filter((p) => getPhilosopherComparison(p.id) !== undefined),
 };

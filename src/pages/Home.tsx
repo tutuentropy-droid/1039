@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BookOpen, GitBranch, Link2, Sparkles, ChevronRight } from 'lucide-react';
+import { BookOpen, GitBranch, Link2, Sparkles, ChevronRight, Scale } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { EvolutionTree } from '@/components/evolution-tree/EvolutionTree';
 import { SchoolCard } from '@/components/school/SchoolCard';
@@ -22,6 +22,11 @@ const Home = () => {
       icon: Link2,
       title: '关系探索',
       description: '深入探索各流派、思想家之间的传承、影响、对立关系，发现思想碰撞的火花。',
+    },
+    {
+      icon: Scale,
+      title: '观点对比',
+      description: '多维度对比不同哲学家与思想流派的观点，从政治观到人生观，深入理解思想差异。',
     },
     {
       icon: BookOpen,
@@ -174,12 +179,12 @@ const Home = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
           >
             {features.map((feature, index) => {
               const Icon = feature.icon;
-              const colors = ['from-ochre/20 to-ochre/5', 'from-indigo-cn/20 to-indigo-cn/5', 'from-cinnabar/20 to-cinnabar/5'];
-              const iconColors = ['text-ochre', 'text-indigo-cn', 'text-cinnabar'];
+              const colors = ['from-ochre/20 to-ochre/5', 'from-indigo-cn/20 to-indigo-cn/5', 'from-cinnabar/20 to-cinnabar/5', 'from-jade/20 to-jade/5'];
+              const iconColors = ['text-ochre', 'text-indigo-cn', 'text-cinnabar', 'text-jade'];
 
               return (
                 <motion.div key={feature.title} variants={itemVariants}>

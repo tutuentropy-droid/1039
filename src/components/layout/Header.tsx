@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, BookOpen, Network, Home, Menu, X, Users, Clock } from 'lucide-react';
+import { Search, BookOpen, Network, Home, Menu, X, Users, Clock, Scale } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -14,6 +14,7 @@ export const Header = () => {
     { path: '/philosophers', label: '人物图谱', icon: Users },
     { path: '/timeline', label: '历史时间轴', icon: Clock },
     { path: '/relations', label: '思想关系', icon: Network },
+    { path: '/compare', label: '观点对比', icon: Scale },
   ];
 
   return (
