@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Scale,
@@ -49,6 +50,9 @@ interface EntitySelectProps {
 const EntitySelect = ({ mode, value, onChange, placeholder, accentColor, excludeId }: EntitySelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const entities: Array<School | Philosopher> = useMemo(() => {
     if (mode === 'school') {
@@ -86,21 +90,179 @@ const EntitySelect = ({ mode, value, onChange, placeholder, accentColor, exclude
     return school?.color || '#8B4513';
   };
 
+  const updateDropdownPosition = useCallback(() => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + window.scrollY + 8,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
+    }
+  }, []);
+
+  const handleToggle = useCallback(() => {
+    if (!isOpen) {
+      updateDropdownPosition();
+    }
+    setIsOpen(!isOpen);
+  }, [isOpen, updateDropdownPosition]);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+    setSearchTerm('');
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        handleClose();
+      }
+    };
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+    };
+
+    const handleResize = () => {
+      updateDropdownPosition();
+    };
+
+    const handleScroll = () => {
+      updateDropdownPosition();
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScroll, true);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll, true);
+    };
+  }, [isOpen, handleClose, updateDropdownPosition]);
+
+  const selectedColor = selectedEntity ? entityColor(selectedEntity) : null;
+
+  const dropdownContent = (
+    <motion.div
+      ref={dropdownRef}
+      initial={{ opacity: 0, y: -8, height: 0 }}
+      animate={{ opacity: 1, y: 0, height: 'auto' }}
+      exit={{ opacity: 0, y: -8, height: 0 }}
+      transition={{ duration: 0.2 }}
+      style={{
+        position: 'absolute',
+        top: dropdownPos.top,
+        left: dropdownPos.left,
+        width: dropdownPos.width,
+        zIndex: 9999,
+      }}
+      className="rounded-xl border border-stone-200 bg-white shadow-2xl overflow-hidden"
+    >
+      <div className="p-3 border-b border-stone-100">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder={`搜索${mode === 'school' ? '流派' : '哲学家'}...`}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            autoFocus
+            className="w-full pl-9 pr-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ochre/40 focus:bg-white"
+          />
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/40"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div className="max-h-64 overflow-y-auto py-1">
+        {entities.length === 0 ? (
+          <div className="px-4 py-8 text-center text-sm text-ink/40">没有找到匹配项</div>
+        ) : (
+          entities.map((entity) => {
+            const isExcluded = excludeId && entity.id === excludeId;
+            const isSelected = value === entity.id;
+            return (
+              <button
+                key={entity.id}
+                onClick={() => {
+                  if (!isExcluded) {
+                    onChange(entity.id);
+                    handleClose();
+                  }
+                }}
+                disabled={isExcluded}
+                className={cn(
+                  'w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors',
+                  isExcluded ? 'opacity-40 cursor-not-allowed' : 'hover:bg-stone-50',
+                  isSelected && 'bg-ochre/5'
+                )}
+              >
+                <div
+                  className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+                  style={{ backgroundColor: entityColor(entity) }}
+                >
+                  {entity.name.charAt(0)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-ink">
+                    {entity.name}
+                    {isExcluded && <span className="ml-2 text-xs text-ink/40">（已在另一侧选择）</span>}
+                  </div>
+                  <div className="text-xs text-ink/50 truncate">
+                    {mode === 'school'
+                      ? `${(entity as School).period} · ${(entity as School).coreIdeas.slice(0, 3).join('、')}`
+                      : `${(entity as Philosopher).dynasty} · ${(entity as Philosopher).coreIdeas.slice(0, 3).join('、')}`}
+                  </div>
+                </div>
+                {isSelected && (
+                  <Check className="w-4 h-4 text-ochre flex-shrink-0" />
+                )}
+              </button>
+            );
+          })
+        )}
+      </div>
+    </motion.div>
+  );
+
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className={cn(
           'w-full flex items-center gap-3 p-4 rounded-xl border-2 bg-white transition-all text-left',
           isOpen ? 'border-ochre/60 ring-2 ring-ochre/20' : 'border-stone-200 hover:border-stone-300'
         )}
-        style={value && selectedEntity ? { borderColor: entityColor(selectedEntity) + '80' } : {}}
+        style={selectedColor ? { borderColor: selectedColor + '80' } : {}}
       >
         {selectedEntity ? (
           <>
             <div
               className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold shadow-md flex-shrink-0"
-              style={{ backgroundColor: entityColor(selectedEntity) }}
+              style={{ backgroundColor: selectedColor }}
             >
               {selectedEntity.name.charAt(0)}
             </div>
@@ -155,91 +317,11 @@ const EntitySelect = ({ mode, value, onChange, placeholder, accentColor, exclude
         )}
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: 'auto' }}
-            exit={{ opacity: 0, y: -8, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="absolute z-30 left-0 right-0 mt-2 rounded-xl border border-stone-200 bg-white shadow-xl overflow-hidden"
-          >
-            <div className="p-3 border-b border-stone-100">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder={`搜索${mode === 'school' ? '流派' : '哲学家'}...`}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ochre/40 focus:bg-white"
-                />
-                <svg
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/40"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </div>
-            </div>
-            <div className="max-h-64 overflow-y-auto py-1">
-              {entities.length === 0 ? (
-                <div className="px-4 py-8 text-center text-sm text-ink/40">没有找到匹配项</div>
-              ) : (
-                entities.map((entity) => {
-                  const isExcluded = excludeId && entity.id === excludeId;
-                  const isSelected = value === entity.id;
-                  return (
-                    <button
-                      key={entity.id}
-                      onClick={() => {
-                        if (!isExcluded) {
-                          onChange(entity.id);
-                          setIsOpen(false);
-                          setSearchTerm('');
-                        }
-                      }}
-                      disabled={isExcluded}
-                      className={cn(
-                        'w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors',
-                        isExcluded ? 'opacity-40 cursor-not-allowed' : 'hover:bg-stone-50',
-                        isSelected && 'bg-ochre/5'
-                      )}
-                    >
-                      <div
-                        className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                        style={{ backgroundColor: entityColor(entity) }}
-                      >
-                        {entity.name.charAt(0)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-ink">
-                          {entity.name}
-                          {isExcluded && <span className="ml-2 text-xs text-ink/40">（已在另一侧选择）</span>}
-                        </div>
-                        <div className="text-xs text-ink/50 truncate">
-                          {mode === 'school'
-                            ? `${(entity as School).period} · ${(entity as School).coreIdeas.slice(0, 3).join('、')}`
-                            : `${(entity as Philosopher).dynasty} · ${(entity as Philosopher).coreIdeas.slice(0, 3).join('、')}`}
-                        </div>
-                      </div>
-                      {isSelected && (
-                        <Check className="w-4 h-4 text-ochre flex-shrink-0" />
-                      )}
-                    </button>
-                  );
-                })
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {typeof document !== 'undefined' && (
+        <AnimatePresence>
+          {isOpen && createPortal(dropdownContent, document.body)}
+        </AnimatePresence>
+      )}
     </div>
   );
 };
