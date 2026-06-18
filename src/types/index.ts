@@ -133,3 +133,160 @@ export const MAP_NODE_TYPE_COLORS: Record<MapNodeType, string> = {
   'event': '#7C3AED',
   'school': '#059669',
 };
+
+export type GamePhase = 'select' | 'playing' | 'ended';
+export type ActionType = 'lecture' | 'debate' | 'persuade' | 'write';
+export type RulerAlignment = 'supportive' | 'neutral' | 'opposed';
+
+export interface State {
+  influence: Record<string, number>;
+  prestige: number;
+  disciples: number;
+  energy: number;
+  maxEnergy: number;
+}
+
+export interface SchoolAbility {
+  id: string;
+  name: string;
+  description: string;
+  effect: string;
+  cooldown: number;
+  currentCooldown: number;
+}
+
+export interface RulerState {
+  id: string;
+  alignment: RulerAlignment;
+  influence: number;
+  adoptedSchoolId: string | null;
+}
+
+export interface GameState {
+  phase: GamePhase;
+  currentTurn: number;
+  maxTurns: number;
+  playerSchoolId: string | null;
+  state: State;
+  rulers: Record<string, RulerState>;
+  abilities: SchoolAbility[];
+  eventLog: GameEvent[];
+  selectedRulerId: string | null;
+  gameResult: 'victory' | 'defeat' | null;
+}
+
+export interface GameEvent {
+  id: string;
+  turn: number;
+  type: 'action' | 'random' | 'system';
+  title: string;
+  description: string;
+  effects: {
+    influence?: Record<string, number>;
+    prestige?: number;
+    disciples?: number;
+    energy?: number;
+  };
+}
+
+export interface Ruler {
+  id: string;
+  name: string;
+  stateName: string;
+  locationId: string;
+  description: string;
+  tendencies: string[];
+  power: number;
+  startYear: number;
+  endYear: number;
+}
+
+export interface ActionConfig {
+  id: ActionType;
+  name: string;
+  description: string;
+  energyCost: number;
+  icon: string;
+  baseSuccessRate: number;
+}
+
+export interface RandomEvent {
+  id: string;
+  title: string;
+  description: string;
+  probability: number;
+  effects: {
+    influence?: Record<string, number>;
+    prestige?: number;
+    disciples?: number;
+    energy?: number;
+  };
+  choices?: {
+    text: string;
+    effects: {
+      influence?: Record<string, number>;
+      prestige?: number;
+      disciples?: number;
+      energy?: number;
+    };
+  }[];
+}
+
+export interface SchoolGameConfig {
+  schoolId: string;
+  startingInfluence: Record<string, number>;
+  startingPrestige: number;
+  startingDisciples: number;
+  abilities: Omit<SchoolAbility, 'currentCooldown'>[];
+  lectureBonus: number;
+  debateBonus: number;
+  persuadeBonus: number;
+  writeBonus: number;
+}
+
+export const ACTION_CONFIGS: Record<ActionType, ActionConfig> = {
+  lecture: {
+    id: 'lecture',
+    name: '讲学',
+    description: '在诸侯国讲学，传播思想，增加当地影响力和门徒数量',
+    energyCost: 20,
+    icon: 'book-open',
+    baseSuccessRate: 0.8,
+  },
+  debate: {
+    id: 'debate',
+    name: '辩论',
+    description: '与其他学派辩论，获胜可大幅增加声望和影响力',
+    energyCost: 30,
+    icon: 'message-circle',
+    baseSuccessRate: 0.6,
+  },
+  persuade: {
+    id: 'persuade',
+    name: '游说诸侯',
+    description: '游说诸侯国君采纳你的思想，获得官方支持',
+    energyCost: 40,
+    icon: 'users',
+    baseSuccessRate: 0.4,
+  },
+  write: {
+    id: 'write',
+    name: '著书立说',
+    description: '撰写著作，流传后世，永久增加声望',
+    energyCost: 50,
+    icon: 'scroll',
+    baseSuccessRate: 0.9,
+  },
+};
+
+export const RULER_ALIGNMENT_LABELS: Record<RulerAlignment, string> = {
+  supportive: '支持',
+  neutral: '中立',
+  opposed: '反对',
+};
+
+export const RULER_ALIGNMENT_COLORS: Record<RulerAlignment, string> = {
+  supportive: '#059669',
+  neutral: '#D97706',
+  opposed: '#A52A2A',
+};

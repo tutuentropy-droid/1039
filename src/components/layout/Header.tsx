@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, BookOpen, Network, Home, Menu, X, Users, Clock, Scale, MapPin } from 'lucide-react';
+import { Search, BookOpen, Network, Home, Menu, X, Users, Clock, Scale, MapPin, Gamepad2 } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -16,6 +16,7 @@ export const Header = () => {
     { path: '/map', label: '哲学地图', icon: MapPin },
     { path: '/relations', label: '思想关系', icon: Network },
     { path: '/compare', label: '观点对比', icon: Scale },
+    { path: '/game', label: '百家争鸣', icon: Gamepad2, highlight: true },
   ];
 
   return (
@@ -43,14 +44,19 @@ export const Header = () => {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                  'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 relative',
                   location.pathname === item.path
                     ? 'bg-ink text-paper shadow-md'
+                    : item.highlight
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 shadow-md hover:shadow-lg'
                     : 'text-ink/70 hover:text-ink hover:bg-stone-100'
                 )}
               >
                 <item.icon className="w-4 h-4" />
                 {item.label}
+                {item.highlight && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                )}
               </Link>
             ))}
           </nav>
@@ -93,14 +99,19 @@ export const Header = () => {
                   to={item.path}
                   onClick={() => setIsMenuOpen(false)}
                   className={cn(
-                    'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all',
+                    'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all relative',
                     location.pathname === item.path
                       ? 'bg-ink text-paper'
+                      : item.highlight
+                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white'
                       : 'text-ink/70 hover:bg-stone-100'
                   )}
                 >
                   <item.icon className="w-5 h-5" />
                   {item.label}
+                  {item.highlight && (
+                    <span className="absolute right-4 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  )}
                 </Link>
               ))}
               <div className="relative mt-4">
