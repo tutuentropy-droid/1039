@@ -10,6 +10,7 @@ import TimelinePage from '@/pages/TimelinePage';
 import ComparePage from '@/pages/ComparePage';
 import MapPage from '@/pages/MapPage';
 import GamePage from '@/pages/GamePage';
+import QuizGamePage from '@/pages/QuizGamePage';
 import ReaderPage from '@/pages/ReaderPage';
 
 function NotFound() {
@@ -39,6 +40,7 @@ export default function App() {
             <Route path="/compare" element={<ComparePage />} />
             <Route path="/map" element={<MapPage />} />
             <Route path="/game" element={<GamePage />} />
+            <Route path="/quiz" element={<QuizGamePage />} />
             <Route path="/reader" element={<ReaderPage />} />
             <Route path="/reader/:bookId" element={<ReaderPage />} />
             <Route path="*" element={<NotFound />} />

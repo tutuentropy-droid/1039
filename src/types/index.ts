@@ -341,3 +341,94 @@ export interface PhilosophyNote {
   createdAt: number;
   updatedAt: number;
 }
+
+export type QuizGameType = 'quiz' | 'matching' | 'categorization';
+export type DifficultyLevel = 'easy' | 'medium' | 'hard';
+
+export interface QuizQuestion {
+  id: string;
+  type: 'single' | 'multiple' | 'truefalse';
+  question: string;
+  options: string[];
+  correctAnswers: number[];
+  explanation: string;
+  difficulty: DifficultyLevel;
+  schoolId?: string;
+  philosopherId?: string;
+  expReward: number;
+}
+
+export interface MatchingPair {
+  id: string;
+  left: string;
+  right: string;
+  leftType: 'philosopher' | 'idea' | 'work';
+  rightType: 'school' | 'idea' | 'work' | 'philosopher';
+}
+
+export interface MatchingGameData {
+  id: string;
+  title: string;
+  description: string;
+  pairs: MatchingPair[];
+  difficulty: DifficultyLevel;
+  expReward: number;
+  timeLimit?: number;
+}
+
+export interface CategorizationItem {
+  id: string;
+  text: string;
+  correctCategory: string;
+  philosopherId?: string;
+  schoolId?: string;
+}
+
+export interface CategorizationGameData {
+  id: string;
+  title: string;
+  description: string;
+  categories: { id: string; name: string; icon?: string }[];
+  items: CategorizationItem[];
+  difficulty: DifficultyLevel;
+  expReward: number;
+}
+
+export interface UnlockableItem {
+  id: string;
+  type: 'philosopher' | 'event' | 'work' | 'school';
+  refId: string;
+  name: string;
+  description: string;
+  unlockLevel: number;
+  icon?: string;
+}
+
+export interface LevelInfo {
+  level: number;
+  name: string;
+  expRequired: number;
+  icon?: string;
+}
+
+export interface QuizGameState {
+  level: number;
+  exp: number;
+  totalExp: number;
+  unlockedPhilosophers: string[];
+  unlockedEvents: string[];
+  unlockedWorks: string[];
+  completedQuizzes: string[];
+  completedMatchingGames: string[];
+  completedCategorizationGames: string[];
+  highScores: Record<string, number>;
+  streak: number;
+  lastPlayDate?: number;
+}
+
+export interface GameLevel {
+  level: number;
+  name: string;
+  expRequired: number;
+  color: string;
+}

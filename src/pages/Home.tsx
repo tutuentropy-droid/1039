@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BookOpen, GitBranch, Link2, Sparkles, ChevronRight, Scale } from 'lucide-react';
+import { BookOpen, GitBranch, Link2, Sparkles, ChevronRight, Scale, Brain, Gamepad2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { EvolutionTree } from '@/components/evolution-tree/EvolutionTree';
 import { SchoolCard } from '@/components/school/SchoolCard';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { dataService } from '@/services/dataService';
+import { cn } from '@/lib/utils';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -32,6 +33,17 @@ const Home = () => {
       icon: BookOpen,
       title: '典籍研读',
       description: '研读《论语》《道德经》《庄子》等经典著作，直抵先贤智慧的本源。',
+    },
+    {
+      icon: Brain,
+      title: '知识闯关',
+      description: '通过答题、连线、归类等趣味游戏，解锁哲学家和历史事件，在游戏中提升哲学素养。',
+      highlight: true,
+    },
+    {
+      icon: Gamepad2,
+      title: '百家争鸣',
+      description: '扮演一代宗师，游走于诸侯列国之间，传播你的思想，开创属于你的百家争鸣时代。',
     },
   ];
 
@@ -179,23 +191,58 @@ const Home = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {features.map((feature, index) => {
               const Icon = feature.icon;
-              const colors = ['from-ochre/20 to-ochre/5', 'from-indigo-cn/20 to-indigo-cn/5', 'from-cinnabar/20 to-cinnabar/5', 'from-jade/20 to-jade/5'];
-              const iconColors = ['text-ochre', 'text-indigo-cn', 'text-cinnabar', 'text-jade'];
+              const colors = [
+                'from-ochre/20 to-ochre/5',
+                'from-indigo-cn/20 to-indigo-cn/5',
+                'from-cinnabar/20 to-cinnabar/5',
+                'from-jade/20 to-jade/5',
+                'from-purple-500/20 to-purple-500/5',
+                'from-amber-500/20 to-amber-500/5',
+              ];
+              const iconColors = [
+                'text-ochre',
+                'text-indigo-cn',
+                'text-cinnabar',
+                'text-jade',
+                'text-purple-500',
+                'text-amber-500',
+              ];
+              
+              const navigatePath = 
+                feature.title === '思想演化树' ? '/timeline' :
+                feature.title === '关系探索' ? '/relations' :
+                feature.title === '观点对比' ? '/compare' :
+                feature.title === '典籍研读' ? '/reader' :
+                feature.title === '知识闯关' ? '/quiz' :
+                feature.title === '百家争鸣' ? '/game' : '/';
 
               return (
                 <motion.div key={feature.title} variants={itemVariants}>
-                  <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <Card 
+                    className={cn(
+                      'h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer',
+                      feature.highlight && 'border-2 border-ochre/30 bg-gradient-to-br from-ochre/5 to-transparent'
+                    )}
+                    onClick={() => navigate(navigatePath)}
+                  >
                     <CardContent className="p-8">
                       <div
-                        className={`w-14 h-14 rounded-xl bg-gradient-to-br ${colors[index]} flex items-center justify-center mb-6`}
+                        className={`w-14 h-14 rounded-xl bg-gradient-to-br ${colors[index % colors.length]} flex items-center justify-center mb-6`}
                       >
-                        <Icon className={`w-7 h-7 ${iconColors[index]}`} />
+                        <Icon className={`w-7 h-7 ${iconColors[index % iconColors.length]}`} />
                       </div>
-                      <h3 className="text-xl font-bold text-ink mb-3">{feature.title}</h3>
+                      <div className="flex items-center gap-2 mb-3">
+                        <h3 className="text-xl font-bold text-ink">{feature.title}</h3>
+                        {feature.highlight && (
+                          <Badge variant="solid" color="#F59E0B" className="text-[10px] px-1.5 py-0.5">
+                            NEW
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-ink/60 leading-relaxed">{feature.description}</p>
                     </CardContent>
                   </Card>
