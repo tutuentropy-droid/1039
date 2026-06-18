@@ -18,18 +18,19 @@ interface ChinaMapProps {
 const MAP_WIDTH = 800;
 const MAP_HEIGHT = 600;
 
+const MIN_LNG = 100;
+const MAX_LNG = 128;
+const MIN_LAT = 20;
+const MAX_LAT = 42;
+
 const lngToX = (lng: number): number => {
-  const minLng = 73;
-  const maxLng = 135;
-  const range = maxLng - minLng;
-  return ((lng - minLng) / range) * MAP_WIDTH;
+  const range = MAX_LNG - MIN_LNG;
+  return ((lng - MIN_LNG) / range) * MAP_WIDTH;
 };
 
 const latToY = (lat: number): number => {
-  const minLat = 18;
-  const maxLat = 54;
-  const range = maxLat - minLat;
-  return MAP_HEIGHT - ((lat - minLat) / range) * MAP_HEIGHT;
+  const range = MAX_LAT - MIN_LAT;
+  return MAP_HEIGHT - ((lat - MIN_LAT) / range) * MAP_HEIGHT;
 };
 
 export const ChinaMap = ({
@@ -53,10 +54,10 @@ export const ChinaMap = ({
     return grouped;
   }, [nodes]);
 
-  const getNodeOpacity = useCallback(
-    (node: MapNode): number => {
-      if (currentYear === undefined) return 1;
-      return node.year <= currentYear ? 1 : 0.2;
+  const isNodeActive = useCallback(
+    (node: MapNode): boolean => {
+      if (currentYear === undefined) return true;
+      return node.year <= currentYear;
     },
     [currentYear]
   );
@@ -72,6 +73,7 @@ export const ChinaMap = ({
   };
 
   const handleNodeClick = (node: MapNode) => {
+    if (!isNodeActive(node)) return;
     const location = getLocationById(node.locationId);
     if (location && onNodeClick) {
       onNodeClick(node, location);
@@ -116,7 +118,7 @@ export const ChinaMap = ({
 
           <g className="china-outline">
             <path
-              d="M 180,80 Q 220,60 280,70 Q 340,80 400,65 Q 460,50 520,70 Q 560,90 590,120 Q 620,150 640,180 Q 660,210 680,240 Q 700,270 720,300 Q 740,330 750,360 Q 760,390 755,420 Q 750,450 735,470 Q 720,490 700,500 Q 680,510 660,520 Q 640,530 620,535 Q 600,540 580,545 Q 560,550 540,555 Q 520,560 500,565 Q 480,570 460,572 Q 440,574 420,570 Q 400,566 380,560 Q 360,554 340,545 Q 320,536 300,525 Q 280,514 260,500 Q 240,486 220,470 Q 200,454 185,435 Q 170,416 155,395 Q 140,374 130,350 Q 120,326 115,300 Q 110,274 115,248 Q 120,222 130,198 Q 140,174 155,152 Q 170,130 180,110 Q 175,95 180,80 Z"
+              d="M 280,60 Q 340,40 400,50 Q 460,60 520,50 Q 570,40 610,55 Q 650,70 680,95 Q 710,120 730,150 Q 745,180 755,210 Q 765,240 770,270 Q 775,300 770,330 Q 765,360 755,385 Q 745,410 730,430 Q 715,450 695,465 Q 675,480 655,490 Q 635,500 615,505 Q 595,510 575,515 Q 555,520 535,525 Q 515,530 495,535 Q 475,540 455,543 Q 435,546 415,543 Q 395,540 375,533 Q 355,526 335,515 Q 315,504 295,490 Q 275,476 255,460 Q 235,444 220,425 Q 205,406 190,385 Q 175,364 165,340 Q 155,316 150,290 Q 145,264 150,238 Q 155,212 165,188 Q 175,164 190,142 Q 205,120 220,100 Q 240,80 260,70 Q 270,65 280,60 Z"
               fill="rgba(217, 119, 6, 0.08)"
               stroke="rgba(139, 69, 19, 0.3)"
               strokeWidth="2"
@@ -125,21 +127,21 @@ export const ChinaMap = ({
           </g>
 
           <g className="province-lines" stroke="rgba(139, 69, 19, 0.15)" strokeWidth="1" fill="none">
-            <path d="M 250,120 Q 280,160 300,200 Q 320,240 310,280" />
-            <path d="M 350,100 Q 370,140 390,180 Q 410,220 400,260" />
-            <path d="M 450,90 Q 470,130 490,170 Q 510,210 500,250" />
-            <path d="M 550,110 Q 570,150 580,190 Q 590,230 580,270" />
-            <path d="M 200,220 Q 240,240 280,260 Q 320,280 340,300" />
-            <path d="M 350,280 Q 390,300 430,320 Q 470,340 490,360" />
-            <path d="M 500,290 Q 530,310 560,330 Q 590,350 620,370" />
-            <path d="M 250,350 Q 290,370 330,390 Q 370,410 390,430" />
-            <path d="M 400,380 Q 440,400 480,420 Q 520,440 540,460" />
-            <path d="M 550,400 Q 580,420 610,440 Q 640,460 670,480" />
+            <path d="M 320,100 Q 350,140 370,180 Q 390,220 380,260" />
+            <path d="M 420,80 Q 440,120 460,160 Q 480,200 470,240" />
+            <path d="M 500,70 Q 520,110 540,150 Q 560,190 550,230" />
+            <path d="M 580,80 Q 600,120 620,160 Q 640,200 630,240" />
+            <path d="M 280,200 Q 320,220 360,240 Q 400,260 420,280" />
+            <path d="M 420,260 Q 460,280 500,300 Q 540,320 560,340" />
+            <path d="M 550,270 Q 580,290 610,310 Q 640,330 670,350" />
+            <path d="M 320,310 Q 360,330 400,350 Q 440,370 460,390" />
+            <path d="M 470,350 Q 510,370 550,390 Q 590,410 610,430" />
+            <path d="M 580,380 Q 610,400 640,420 Q 670,440 700,460" />
           </g>
 
-          <g className="rivers" stroke="rgba(30, 77, 107, 0.2)" strokeWidth="2" fill="none">
-            <path d="M 200,280 Q 250,300 300,320 Q 350,340 400,350 Q 450,360 500,370 Q 550,380 600,400 Q 650,420 700,450" />
-            <path d="M 300,150 Q 350,180 400,220 Q 450,260 480,300 Q 510,340 540,380 Q 570,420 600,470" />
+          <g className="rivers" stroke="rgba(30, 77, 107, 0.2)" strokeWidth="2.5" fill="none">
+            <path d="M 260,260 Q 310,280 360,300 Q 410,320 460,330 Q 510,340 560,350 Q 610,360 660,380 Q 710,400 760,430" />
+            <path d="M 360,130 Q 410,160 460,200 Q 510,240 540,280 Q 570,320 600,360 Q 630,400 660,450" />
           </g>
 
           {mapLocations.map((location) => {
@@ -149,24 +151,28 @@ export const ChinaMap = ({
             const x = lngToX(location.lng);
             const y = latToY(location.lat);
 
-            const hasActiveNode = locationNodes.some((n) => getNodeOpacity(n) > 0.5);
-            const primaryNode = locationNodes[0];
-            const nodeCount = locationNodes.length;
+            const activeNodes = locationNodes.filter((n) => isNodeActive(n));
+            if (activeNodes.length === 0) return null;
 
-            const isSelected = selectedNodeId && locationNodes.some((n) => n.id === selectedNodeId);
+            const primaryNode = activeNodes[0];
+            const nodeCount = activeNodes.length;
+
+            const isSelected = selectedNodeId && activeNodes.some((n) => n.id === selectedNodeId);
 
             return (
               <g key={location.id} transform={`translate(${x}, ${y})`}>
                 <motion.circle
                   r={isSelected ? 12 : 8}
                   fill={MAP_NODE_TYPE_COLORS[primaryNode.type]}
-                  opacity={hasActiveNode ? 1 : 0.3}
                   filter={isSelected ? 'url(#glow)' : undefined}
                   className="cursor-pointer"
                   whileHover={{ r: isSelected ? 14 : 10 }}
                   onClick={() => handleNodeClick(primaryNode)}
                   onMouseEnter={(e) => handleNodeHover(primaryNode.id, e)}
                   onMouseLeave={handleNodeLeave}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 />
 
                 <motion.circle
@@ -174,7 +180,7 @@ export const ChinaMap = ({
                   fill="none"
                   stroke={MAP_NODE_TYPE_COLORS[primaryNode.type]}
                   strokeWidth="2"
-                  opacity={hasActiveNode ? 0.4 : 0.1}
+                  opacity={0.4}
                   className="pointer-events-none"
                   animate={{
                     r: isSelected ? [12, 18, 12] : [8, 14, 8],

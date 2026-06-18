@@ -42,7 +42,7 @@ export const NodeDetailModal = ({ isOpen, onClose, node, location }: NodeDetailM
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-x-4 top-1/2 -translate-y-1/2 max-w-2xl mx-auto z-50 max-h-[85vh] overflow-y-auto"
+            className="fixed inset-x-4 top-1/2 -translate-y-1/2 max-w-2xl mx-auto z-50 max-h-[90vh] overflow-y-auto"
           >
             <Card className="bg-paper border-stone-200 shadow-2xl overflow-hidden">
               <div
@@ -166,7 +166,7 @@ export const NodeDetailModal = ({ isOpen, onClose, node, location }: NodeDetailM
                         相关学派
                       </h3>
                       <div className="font-bold text-ink mb-1">{school.name}</div>
-                      <p className="text-sm text-ink/60 line-clamp-2">{school.description}</p>
+                      <p className="text-sm text-ink/60 leading-relaxed">{school.description}</p>
                     </div>
                   )}
 
