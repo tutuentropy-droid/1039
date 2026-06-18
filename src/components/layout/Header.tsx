@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, BookOpen, Network, Home, Menu, X, Users, Clock, Scale, MapPin, Gamepad2 } from 'lucide-react';
+import { Search, BookOpen, Network, Home, Menu, X, Users, Clock, Scale, MapPin, Gamepad2, Library } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -15,6 +15,7 @@ export const Header = () => {
     { path: '/timeline', label: '历史时间轴', icon: Clock },
     { path: '/map', label: '哲学地图', icon: MapPin },
     { path: '/relations', label: '思想关系', icon: Network },
+    { path: '/reader', label: '典籍研读', icon: Library },
     { path: '/compare', label: '观点对比', icon: Scale },
     { path: '/game', label: '百家争鸣', icon: Gamepad2, highlight: true },
   ];

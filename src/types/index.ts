@@ -290,3 +290,54 @@ export const RULER_ALIGNMENT_COLORS: Record<RulerAlignment, string> = {
   neutral: '#D97706',
   opposed: '#A52A2A',
 };
+
+export interface ClassicChapter {
+  id: string;
+  title: string;
+  chapterNumber: number;
+  original: string[];
+  translation: string[];
+  keywords?: string[];
+}
+
+export interface ClassicBook {
+  id: string;
+  workId: string;
+  title: string;
+  author: string;
+  dynasty: string;
+  description: string;
+  chapters: ClassicChapter[];
+  category: 'confucian' | 'taoist' | 'mohist' | 'legalist' | 'other';
+}
+
+export interface Annotation {
+  id: string;
+  bookId: string;
+  chapterId: string;
+  lineIndex: number;
+  text: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface GoldenQuote {
+  id: string;
+  bookId: string;
+  chapterId: string;
+  originalText: string;
+  translationText: string;
+  note?: string;
+  createdAt: number;
+}
+
+export interface PhilosophyNote {
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  relatedBookId?: string;
+  relatedQuoteId?: string;
+  createdAt: number;
+  updatedAt: number;
+}
