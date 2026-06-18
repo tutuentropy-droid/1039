@@ -41,7 +41,24 @@ export const useSchoolTree = (options: UseSchoolTreeOptions = {}) => {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [displayNodeId, setDisplayNodeId] = useState<string | null>(null);
+
+  const hoveredNodeIdRef = useRef<string | null>(null);
+  const selectedNodeIdRef = useRef<string | null>(null);
   const handleNodeClickRef = useRef<(nodeId: string) => void>(() => {});
+
+  useEffect(() => {
+    hoveredNodeIdRef.current = hoveredNodeId;
+  }, [hoveredNodeId]);
+
+  useEffect(() => {
+    selectedNodeIdRef.current = selectedNodeId;
+    setDisplayNodeId(selectedNodeId || hoveredNodeId);
+  }, [selectedNodeId, hoveredNodeId]);
+
+  const enabledRelationTypesKey = useMemo(() => {
+    return enabledRelationTypes ? enabledRelationTypes.slice().sort().join(',') : '';
+  }, [enabledRelationTypes]);
 
   const graphData = useMemo(() => {
     const allSchools = dataService.getAllSchools();
@@ -56,17 +73,23 @@ export const useSchoolTree = (options: UseSchoolTreeOptions = {}) => {
       philosophers = allPhilosophers.filter(p => p.schoolId === selectedSchoolId);
     }
 
+    const centerX = dimensions.width / 2;
+    const centerY = dimensions.height / 2;
+
     const nodes: TreeGraphNode[] = [
-      ...schools.map(s => ({
+      ...schools.map((s, i) => ({
         id: s.id,
         type: 'school' as const,
         name: s.name,
         data: s,
         color: s.color,
         schoolId: s.id,
+        x: centerX + Math.cos((i / schools.length) * Math.PI * 2) * 80,
+        y: centerY + Math.sin((i / schools.length) * Math.PI * 2) * 80,
       })),
-      ...philosophers.map(p => {
+      ...philosophers.map((p, i) => {
         const school = allSchools.find(s => s.id === p.schoolId);
+        const angle = (i / Math.max(philosophers.length, 1)) * Math.PI * 2;
         return {
           id: p.id,
           type: 'philosopher' as const,
@@ -74,15 +97,18 @@ export const useSchoolTree = (options: UseSchoolTreeOptions = {}) => {
           data: p,
           color: school?.color || '#666',
           schoolId: p.schoolId,
+          x: centerX + Math.cos(angle) * 200,
+          y: centerY + Math.sin(angle) * 200,
         };
       }),
     ];
 
     const nodeIds = new Set(nodes.map(n => n.id));
+    const enabledSet = enabledRelationTypes ? new Set(enabledRelationTypes) : null;
     const filteredRelations = allRelations.filter(r => {
       if (!nodeIds.has(r.sourceId) || !nodeIds.has(r.targetId)) return false;
-      if (enabledRelationTypes && enabledRelationTypes.length > 0) {
-        return enabledRelationTypes.includes(r.relationType);
+      if (enabledSet && enabledSet.size > 0) {
+        return enabledSet.has(r.relationType);
       }
       return true;
     });
@@ -97,16 +123,20 @@ export const useSchoolTree = (options: UseSchoolTreeOptions = {}) => {
     }));
 
     return { nodes, links };
-  }, [selectedSchoolId, enabledRelationTypes]);
+  }, [selectedSchoolId, enabledRelationTypesKey, dimensions.width, dimensions.height]);
 
   useEffect(() => {
     if (!svgRef.current || graphData.nodes.length === 0) return;
 
     const width = dimensions.width;
     const height = dimensions.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
+
+    const defs = svg.append('defs');
 
     const container = svg.append('g');
 
@@ -118,7 +148,154 @@ export const useSchoolTree = (options: UseSchoolTreeOptions = {}) => {
         setPan({ x: event.transform.x, y: event.transform.y });
       });
 
-    svg.call(zoomBehavior);
+    svg.call(zoomBehavior).on('dblclick.zoom', null);
+
+    const linkGroup = container.append('g').attr('class', 'links');
+
+    const nodeGroup = container.append('g').attr('class', 'nodes');
+
+    const linkElements = linkGroup.selectAll('path')
+      .data(graphData.links)
+      .enter()
+      .append('path')
+      .attr('fill', 'none')
+      .attr('stroke', d => d.color)
+      .attr('stroke-width', d => 1.5 + d.strength * 0.25)
+      .attr('stroke-opacity', 0.7)
+      .attr('stroke-dasharray', d => {
+        if (d.relationType === 'criticize' || d.relationType === 'opposition') return '8,4';
+        if (d.relationType === 'borrow') return '4,3';
+        return null as any;
+      });
+
+    linkElements.each(function (d: any) {
+      const isCriticize = d.relationType === 'criticize' || d.relationType === 'opposition';
+      const isBorrow = d.relationType === 'borrow';
+      if (isCriticize || isBorrow || d.relationType === 'teacher-student' || d.relationType === 'inheritance') {
+        const markerId = `arrow-${d.relation.id}`;
+        defs.append('marker')
+          .attr('id', markerId)
+          .attr('viewBox', '0 -5 10 10')
+          .attr('refX', 25)
+          .attr('refY', 0)
+          .attr('markerWidth', 6)
+          .attr('markerHeight', 6)
+          .attr('orient', 'auto')
+          .append('path')
+          .attr('d', 'M0,-5L10,0L0,5')
+          .attr('fill', d.color);
+        d3.select(this).attr('marker-end', `url(#${markerId})`);
+      }
+    });
+
+    const nodeElements = nodeGroup.selectAll('g')
+      .data(graphData.nodes, (d: any) => d.id)
+      .enter()
+      .append('g')
+      .attr('cursor', 'grab')
+      .call(d3.drag<SVGGElement, TreeGraphNode>()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended));
+
+    nodeElements.append('circle')
+      .attr('class', 'node-bg')
+      .attr('r', d => d.type === 'school' ? 32 : 26)
+      .attr('fill', d => d.color)
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 2.5);
+
+    nodeElements.append('circle')
+      .attr('r', d => d.type === 'school' ? 20 : 16)
+      .attr('fill', 'rgba(255,255,255,0.18)')
+      .attr('cy', d => d.type === 'school' ? -6 : -5)
+      .attr('pointer-events', 'none');
+
+    nodeElements.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', d => d.type === 'school' ? 5 : 4)
+      .attr('font-size', d => d.type === 'school' ? '16px' : '13px')
+      .attr('fill', '#fff')
+      .attr('font-weight', 'bold')
+      .attr('pointer-events', 'none')
+      .text(d => d.type === 'school' ? '派' : d.name.charAt(0));
+
+    nodeElements.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', d => d.type === 'school' ? 54 : 46)
+      .attr('font-size', '13px')
+      .attr('font-weight', '600')
+      .attr('fill', '#2C2416')
+      .attr('pointer-events', 'none')
+      .text(d => d.name);
+
+    nodeElements.append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', d => d.type === 'school' ? 70 : 62)
+      .attr('font-size', '10px')
+      .attr('fill', '#8B7355')
+      .attr('pointer-events', 'none')
+      .text(d => d.type === 'school' ? '流派' : (d.data as Philosopher).dynasty);
+
+    const updateNodeStyles = () => {
+      const hId = hoveredNodeIdRef.current;
+      const sId = selectedNodeIdRef.current;
+      const activeId = sId || hId;
+
+      nodeElements.select('circle.node-bg')
+        .attr('stroke', d => (d.id === hId || d.id === sId) ? '#2C2416' : '#fff')
+        .attr('stroke-width', d => (d.id === hId || d.id === sId) ? 3.5 : 2.5)
+        .attr('opacity', d => {
+          if (!activeId) return 1;
+          if (d.id === activeId) return 1;
+
+          const isConnected = graphData.links.some(l => {
+            const sId2 = typeof l.source === 'string' ? l.source : (l.source as TreeGraphNode).id;
+            const tId2 = typeof l.target === 'string' ? l.target : (l.target as TreeGraphNode).id;
+            return (sId2 === activeId && tId2 === d.id) || (tId2 === activeId && sId2 === d.id);
+          });
+          return isConnected ? 0.85 : 0.25;
+        });
+
+      linkElements.attr('stroke-opacity', d => {
+        if (!activeId) return 0.7;
+        const sId2 = typeof d.source === 'string' ? d.source : (d.source as TreeGraphNode).id;
+        const tId2 = typeof d.target === 'string' ? d.target : (d.target as TreeGraphNode).id;
+        if (sId2 === activeId || tId2 === activeId) return 1;
+        return 0.1;
+      });
+    };
+
+    nodeElements
+      .on('mouseover', function (event, d) {
+        setHoveredNodeId(d.id);
+        d3.select(this).select('circle.node-bg')
+          .transition()
+          .duration(200)
+          .attr('r', d.type === 'school' ? 38 : 32);
+        d3.select(this).raise();
+        updateNodeStyles();
+      })
+      .on('mouseout', function (event, d) {
+        setHoveredNodeId(null);
+        d3.select(this).select('circle.node-bg')
+          .transition()
+          .duration(200)
+          .attr('r', d.type === 'school' ? 32 : 26);
+        updateNodeStyles();
+      })
+      .on('click', function (event, d) {
+        event.stopPropagation();
+        handleNodeClickRef.current(d.id);
+        updateNodeStyles();
+      });
+
+    svg.on('click', () => {
+      if (selectedNodeIdRef.current) {
+        setSelectedNodeId(null);
+        updateNodeStyles();
+      }
+    });
 
     const simulation = d3.forceSimulation<TreeGraphNode>(graphData.nodes)
       .force('link', d3.forceLink<TreeGraphNode, TreeGraphLink>(graphData.links)
@@ -137,140 +314,23 @@ export const useSchoolTree = (options: UseSchoolTreeOptions = {}) => {
           if (d.relationType === 'inheritance') return 0.5;
           return 0.2 + d.strength * 0.03;
         }))
-      .force('charge', d3.forceManyBody().strength(-500))
-      .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(55));
-
-    const linkGroup = container.append('g').attr('class', 'links');
-
-    graphData.links.forEach((linkData) => {
-      const isCriticize = linkData.relationType === 'criticize' || linkData.relationType === 'opposition';
-      const isBorrow = linkData.relationType === 'borrow';
-
-      const path = linkGroup.append('path')
-        .attr('fill', 'none')
-        .attr('stroke', linkData.color)
-        .attr('stroke-width', () => {
-          return 1.5 + linkData.strength * 0.25;
-        })
-        .attr('stroke-opacity', 0.7);
-
-      if (isCriticize) {
-        path.attr('stroke-dasharray', '8,4');
-      } else if (isBorrow) {
-        path.attr('stroke-dasharray', '4,3');
-      }
-
-      if (isCriticize || isBorrow || linkData.relationType === 'teacher-student' || linkData.relationType === 'inheritance') {
-        const markerId = `arrow-${linkData.relation.id}`;
-        const defs = svg.select('defs').empty() ? svg.append('defs') : svg.select('defs');
-        defs.append('marker')
-          .attr('id', markerId)
-          .attr('viewBox', '0 -5 10 10')
-          .attr('refX', 25)
-          .attr('refY', 0)
-          .attr('markerWidth', 6)
-          .attr('markerHeight', 6)
-          .attr('orient', 'auto')
-          .append('path')
-          .attr('d', 'M0,-5L10,0L0,5')
-          .attr('fill', linkData.color);
-
-        path.attr('marker-end', `url(#${markerId})`);
-      }
-    });
-
-    const link = linkGroup.selectAll('path');
-
-    const node = container.append('g')
-      .attr('class', 'nodes')
-      .selectAll('g')
-      .data(graphData.nodes)
-      .enter()
-      .append('g')
-      .attr('cursor', 'grab')
-      .call(d3.drag<SVGGElement, TreeGraphNode>()
-        .on('start', dragstarted)
-        .on('drag', dragged)
-        .on('end', dragended));
-
-    node.append('circle')
-      .attr('r', d => d.type === 'school' ? 32 : 26)
-      .attr('fill', d => d.color)
-      .attr('stroke', d => {
-        if (hoveredNodeId === d.id || selectedNodeId === d.id) return '#2C2416';
-        return '#fff';
-      })
-      .attr('stroke-width', d => (hoveredNodeId === d.id || selectedNodeId === d.id) ? 3.5 : 2.5)
-      .attr('opacity', d => {
-        if (hoveredNodeId && hoveredNodeId !== d.id) return 0.45;
-        if (selectedNodeId && selectedNodeId !== d.id) return 0.45;
-        return 1;
-      });
-
-    node.append('circle')
-      .attr('r', d => d.type === 'school' ? 20 : 16)
-      .attr('fill', 'rgba(255,255,255,0.18)')
-      .attr('cy', d => d.type === 'school' ? -6 : -5)
-      .attr('pointer-events', 'none');
-
-    node.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', d => d.type === 'school' ? 5 : 4)
-      .attr('font-size', d => d.type === 'school' ? '16px' : '13px')
-      .attr('fill', '#fff')
-      .attr('font-weight', 'bold')
-      .attr('pointer-events', 'none')
-      .text(d => d.type === 'school' ? '派' : d.name.charAt(0));
-
-    node.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', d => d.type === 'school' ? 54 : 46)
-      .attr('font-size', '13px')
-      .attr('font-weight', '600')
-      .attr('fill', '#2C2416')
-      .attr('pointer-events', 'none')
-      .text(d => d.name);
-
-    node.append('text')
-      .attr('text-anchor', 'middle')
-      .attr('dy', d => d.type === 'school' ? 70 : 62)
-      .attr('font-size', '10px')
-      .attr('fill', '#8B7355')
-      .attr('pointer-events', 'none')
-      .text(d => d.type === 'school' ? '流派' : (d.data as Philosopher).dynasty);
-
-    node.on('mouseover', function(event, d) {
-      setHoveredNodeId(d.id);
-      d3.select(this).select('circle')
-        .transition()
-        .duration(200)
-        .attr('r', d.type === 'school' ? 38 : 32);
-
-      d3.select(this).raise();
-    })
-    .on('mouseout', function(event, d) {
-      setHoveredNodeId(null);
-      d3.select(this).select('circle')
-        .transition()
-        .duration(200)
-        .attr('r', d.type === 'school' ? 32 : 26);
-    })
-    .on('click', function(event, d) {
-      event.stopPropagation();
-      handleNodeClickRef.current(d.id);
-    });
+      .force('charge', d3.forceManyBody().strength(-450).distanceMax(450))
+      .force('x', d3.forceX(centerX).strength(0.08))
+      .force('y', d3.forceY(centerY).strength(0.08))
+      .force('collision', d3.forceCollide().radius(55))
+      .alphaDecay(0.05)
+      .velocityDecay(0.4);
 
     simulation.on('tick', () => {
-      link.attr('d', (d: any) => {
+      linkElements.attr('d', (d: any) => {
         const source = d.source as TreeGraphNode;
         const target = d.target as TreeGraphNode;
-        if (!source.x || !source.y || !target.x || !target.y) return '';
+        if (source.x == null || source.y == null || target.x == null || target.y == null) return '';
 
         const dx = target.x - source.x;
         const dy = target.y - source.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist === 0) return '';
+        if (dist === 0) return `M ${source.x} ${source.y} L ${target.x} ${target.y}`;
 
         const offset = d.relationType === 'criticize' || d.relationType === 'opposition' || d.relationType === 'borrow' ? 30 : 15;
         const nx = -dy / dist * offset;
@@ -281,7 +341,7 @@ export const useSchoolTree = (options: UseSchoolTreeOptions = {}) => {
         return `M ${source.x} ${source.y} Q ${midX} ${midY} ${target.x} ${target.y}`;
       });
 
-      node.attr('transform', d => `translate(${d.x},${d.y})`);
+      nodeElements.attr('transform', d => `translate(${d.x},${d.y})`);
     });
 
     function dragstarted(event: d3.D3DragEvent<SVGGElement, TreeGraphNode, TreeGraphNode>, d: TreeGraphNode) {
@@ -306,7 +366,7 @@ export const useSchoolTree = (options: UseSchoolTreeOptions = {}) => {
     return () => {
       simulation.stop();
     };
-  }, [graphData, dimensions, hoveredNodeId, selectedNodeId]);
+  }, [graphData, dimensions.width, dimensions.height]);
 
   const handleNodeClick = useCallback((nodeId: string) => {
     setSelectedNodeId(prev => prev === nodeId ? null : nodeId);
@@ -324,28 +384,22 @@ export const useSchoolTree = (options: UseSchoolTreeOptions = {}) => {
   const handleZoomIn = useCallback(() => {
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
-    svg.transition().duration(300).call(
-      d3.zoom<SVGSVGElement, unknown>().scaleBy as any,
-      1.2
-    );
+    const zoomBehavior = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0.3, 3]);
+    svg.transition().duration(300).call(zoomBehavior.scaleBy as any, 1.2);
   }, []);
 
   const handleZoomOut = useCallback(() => {
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
-    svg.transition().duration(300).call(
-      d3.zoom<SVGSVGElement, unknown>().scaleBy as any,
-      0.8
-    );
+    const zoomBehavior = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0.3, 3]);
+    svg.transition().duration(300).call(zoomBehavior.scaleBy as any, 0.8);
   }, []);
 
   const handleResetView = useCallback(() => {
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
-    svg.transition().duration(500).call(
-      d3.zoom<SVGSVGElement, unknown>().transform as any,
-      d3.zoomIdentity
-    );
+    const zoomBehavior = d3.zoom<SVGSVGElement, unknown>().scaleExtent([0.3, 3]);
+    svg.transition().duration(500).call(zoomBehavior.transform as any, d3.zoomIdentity);
     setZoom(1);
     setPan({ x: 0, y: 0 });
   }, []);
@@ -360,6 +414,10 @@ export const useSchoolTree = (options: UseSchoolTreeOptions = {}) => {
     return graphData.nodes.find(n => n.id === hoveredNodeId) || null;
   }, [hoveredNodeId, graphData.nodes]);
 
+  const displayNodeData = useMemo(() => {
+    return selectedNodeData || hoveredNodeData || null;
+  }, [selectedNodeData, hoveredNodeData]);
+
   return {
     svgRef,
     dimensions,
@@ -369,8 +427,10 @@ export const useSchoolTree = (options: UseSchoolTreeOptions = {}) => {
     graphData,
     selectedNodeData,
     hoveredNodeData,
+    displayNodeData,
     selectedNodeId,
     hoveredNodeId,
+    displayNodeId,
     handleNodeClick,
     handleBackgroundClick,
     handleZoomIn,

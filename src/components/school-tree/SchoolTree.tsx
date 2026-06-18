@@ -12,7 +12,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useSchoolTree, TreeGraphNode } from '@/hooks/useSchoolTree';
+import { useSchoolTree } from '@/hooks/useSchoolTree';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -63,7 +63,7 @@ export const SchoolTree = ({ initialSchoolId }: SchoolTreeProps) => {
     zoom,
     graphData,
     selectedNodeData,
-    hoveredNodeData,
+    displayNodeData,
     handleBackgroundClick,
     handleZoomIn,
     handleZoomOut,
@@ -114,11 +114,7 @@ export const SchoolTree = ({ initialSchoolId }: SchoolTreeProps) => {
     });
   };
 
-  const getDisplayNode = (): TreeGraphNode | null => {
-    return selectedNodeData || hoveredNodeData;
-  };
-
-  const displayNode = getDisplayNode();
+  const displayNode = displayNodeData;
 
   return (
     <div className="min-h-screen">
