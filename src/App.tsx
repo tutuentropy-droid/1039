@@ -12,6 +12,7 @@ import MapPage from '@/pages/MapPage';
 import GamePage from '@/pages/GamePage';
 import QuizGamePage from '@/pages/QuizGamePage';
 import ReaderPage from '@/pages/ReaderPage';
+import SchoolTreePage from '@/pages/SchoolTreePage';
 
 function NotFound() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/philosophers" element={<PhilosophersPage />} />
             <Route path="/timeline" element={<TimelinePage />} />
             <Route path="/relations" element={<RelationExplorer />} />
+            <Route path="/school-tree" element={<SchoolTreePage />} />
             <Route path="/compare" element={<ComparePage />} />
             <Route path="/map" element={<MapPage />} />
             <Route path="/game" element={<GamePage />} />

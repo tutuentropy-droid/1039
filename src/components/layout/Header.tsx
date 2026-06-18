@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, BookOpen, Network, Home, Menu, X, Users, Clock, Scale, MapPin, Gamepad2, Library, Brain } from 'lucide-react';
+import { Search, BookOpen, Network, Home, Menu, X, Users, Clock, Scale, MapPin, Gamepad2, Library, Brain, GitBranch } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -14,10 +14,11 @@ export const Header = () => {
     { path: '/philosophers', label: '人物图谱', icon: Users },
     { path: '/timeline', label: '历史时间轴', icon: Clock },
     { path: '/map', label: '哲学地图', icon: MapPin },
+    { path: '/school-tree', label: '门派传承树', icon: GitBranch, highlight: true },
     { path: '/relations', label: '思想关系', icon: Network },
     { path: '/reader', label: '典籍研读', icon: Library },
     { path: '/compare', label: '观点对比', icon: Scale },
-    { path: '/quiz', label: '知识闯关', icon: Brain, highlight: true },
+    { path: '/quiz', label: '知识闯关', icon: Brain },
     { path: '/game', label: '百家争鸣', icon: Gamepad2 },
   ];
 

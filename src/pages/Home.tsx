@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BookOpen, GitBranch, Link2, Sparkles, ChevronRight, Scale, Brain, Gamepad2 } from 'lucide-react';
+import { BookOpen, GitBranch, Link2, Sparkles, ChevronRight, Scale, Brain, Gamepad2, TreeDeciduous } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { EvolutionTree } from '@/components/evolution-tree/EvolutionTree';
 import { SchoolCard } from '@/components/school/SchoolCard';
@@ -14,6 +14,12 @@ const Home = () => {
   const mainSchools = dataService.getMainSchools();
 
   const features = [
+    {
+      icon: TreeDeciduous,
+      title: '门派传承树',
+      description: '探索哲学家之间的师承关系、思想借鉴与批判论争，拖动图谱查看不同颜色的连接线。',
+      highlight: true,
+    },
     {
       icon: GitBranch,
       title: '思想演化树',
@@ -38,7 +44,6 @@ const Home = () => {
       icon: Brain,
       title: '知识闯关',
       description: '通过答题、连线、归类等趣味游戏，解锁哲学家和历史事件，在游戏中提升哲学素养。',
-      highlight: true,
     },
     {
       icon: Gamepad2,
@@ -213,6 +218,7 @@ const Home = () => {
               ];
               
               const navigatePath = 
+                feature.title === '门派传承树' ? '/school-tree' :
                 feature.title === '思想演化树' ? '/timeline' :
                 feature.title === '关系探索' ? '/relations' :
                 feature.title === '观点对比' ? '/compare' :

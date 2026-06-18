@@ -26,6 +26,11 @@ export interface Philosopher {
   coreIdeas: string[];
   works: string[];
   imageUrl: string;
+  teacherIds?: string[];
+  discipleIds?: string[];
+  influencedByIds?: string[];
+  borrowIds?: string[];
+  criticizedIds?: string[];
 }
 
 export interface Work {
@@ -37,7 +42,7 @@ export interface Work {
   description: string;
 }
 
-export type RelationType = 'inheritance' | 'influence' | 'opposition' | 'teacher-student';
+export type RelationType = 'inheritance' | 'influence' | 'opposition' | 'teacher-student' | 'borrow' | 'criticize';
 export type EntityType = 'school' | 'philosopher';
 
 export interface Relation {
@@ -84,6 +89,8 @@ export const RELATION_TYPE_LABELS: Record<RelationType, string> = {
   'influence': '影响',
   'opposition': '对立',
   'teacher-student': '师承',
+  'borrow': '思想借鉴',
+  'criticize': '思想批判',
 };
 
 export const RELATION_TYPE_COLORS: Record<RelationType, string> = {
@@ -91,6 +98,8 @@ export const RELATION_TYPE_COLORS: Record<RelationType, string> = {
   'influence': '#1E4D6B',
   'opposition': '#A52A2A',
   'teacher-student': '#2E7D32',
+  'borrow': '#7B1FA2',
+  'criticize': '#C62828',
 };
 
 export type MapNodeType = 'birthplace' | 'lecture' | 'event' | 'school';

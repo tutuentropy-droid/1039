@@ -12,6 +12,8 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['仁', '礼', '德治', '有教无类', '中庸'],
     works: ['《论语》', '《诗》', '《书》', '《礼》', '《易》', '《春秋》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ancient%20chinese%20philosopher%20Confucius%20in%20traditional%20robes%20with%20serene%20expression&image_size=square',
+    discipleIds: ['mencius', 'xunzi'],
+    influencedByIds: ['laozi'],
   },
   {
     id: 'mencius',
@@ -24,6 +26,8 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['性善论', '仁政', '民本', '义利之辨', '浩然之气'],
     works: ['《孟子》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ancient%20chinese%20philosopher%20Mencius%20in%20traditional%20han%20dynasty%20robes%20wise%20expression&image_size=square',
+    teacherIds: ['confucius'],
+    criticizedIds: ['mozi', 'yangzhu'],
   },
   {
     id: 'xunzi',
@@ -36,6 +40,9 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['性恶论', '礼法并用', '天行有常', '制天命而用之'],
     works: ['《荀子》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ancient%20chinese%20philosopher%20Xunzi%20scholarly%20appearance%20traditional%20robes&image_size=square',
+    teacherIds: ['confucius'],
+    discipleIds: ['hanfei', 'lisi'],
+    criticizedIds: ['mencius', 'zhuangzi'],
   },
   {
     id: 'laozi',
@@ -48,6 +55,8 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['道', '无为而治', '道法自然', '柔弱胜刚强', '辩证法'],
     works: ['《道德经》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ancient%20chinese%20philosopher%20Laozi%20with%20long%20white%20beard%20serene%20mystical%20expression&image_size=square',
+    discipleIds: ['zhuangzi'],
+    influencedByIds: [],
   },
   {
     id: 'zhuangzi',
@@ -60,6 +69,9 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['逍遥游', '齐物论', '相对主义', '自然无为', '养生'],
     works: ['《庄子》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ancient%20chinese%20philosopher%20Zhuangzi%20contemplative%20expression%20surrounded%20by%20butterflies&image_size=square',
+    teacherIds: ['laozi'],
+    influencedByIds: ['huishi'],
+    criticizedIds: ['confucius', 'mozi'],
   },
   {
     id: 'hanfei',
@@ -72,6 +84,8 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['法、术、势结合', '君主集权', '以法治国', '赏罚分明', '进化历史观'],
     works: ['《韩非子》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ancient%20chinese%20legalist%20philosopher%20Han%20Fei%20serious%20scholarly%20appearance&image_size=square',
+    teacherIds: ['xunzi', 'shangyang'],
+    borrowIds: ['laozi'],
   },
   {
     id: 'shangyang',
@@ -84,6 +98,7 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['变法革新', '以法治国', '重农抑商', '奖励耕战', '郡县制'],
     works: ['《商君书》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ancient%20chinese%20statesman%20Shang%20Yang%20determined%20strong%20leader%20appearance&image_size=square',
+    discipleIds: ['hanfei'],
   },
   {
     id: 'mozi',
@@ -96,6 +111,7 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['兼爱', '非攻', '尚贤', '节用', '非乐', '逻辑推理'],
     works: ['《墨子》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ancient%20chinese%20philosopher%20Mozi%20humble%20practical%20appearance%20compassionate%20expression&image_size=square',
+    criticizedIds: ['confucius'],
   },
   {
     id: 'huishi',
@@ -108,6 +124,7 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['合同异', '历物十事', '相对性', '逻辑辩论'],
     works: ['《惠子》（已佚）'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ancient%20chinese%20philosopher%20Hui%20Shi%20debating%20expression%20intelligent%20eyes&image_size=square',
+    influencedByIds: ['zhuangzi'],
   },
   {
     id: 'gongsunlong',
@@ -120,6 +137,7 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['白马非马', '离坚白', '名实之辨', '概念分析'],
     works: ['《公孙龙子》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ancient%20chinese%20philosopher%20Gongsun%20Long%20with%20white%20horse%20symbolic%20artistic&image_size=square',
+    teacherIds: ['huishi'],
   },
   {
     id: 'zouyan',
@@ -132,6 +150,8 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['阴阳五行', '五德终始', '大九州说', '天人感应'],
     works: ['《邹子》（已佚）'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ancient%20chinese%20philosopher%20Zou%20Yan%20mystical%20cosmic%20elements%20yin%20yang%20symbol&image_size=square',
+    influencedByIds: ['laozi'],
+    discipleIds: ['dongzhongshu'],
   },
   {
     id: 'dongzhongshu',
@@ -144,6 +164,8 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['独尊儒术', '天人感应', '大一统', '三纲五常', '性三品说'],
     works: ['《春秋繁露》', '《天人三策》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20western%20han%20dynasty%20scholar%20Dong%20Zhongshu%20wise%20elderly%20scholar&image_size=square',
+    teacherIds: ['confucius', 'zouyan'],
+    borrowIds: ['yin-yang', 'legalism'],
   },
   {
     id: 'wangbi',
@@ -156,6 +178,8 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['贵无论', '得意忘言', '本末体用', '名教本于自然'],
     works: ['《周易注》', '《老子注》', '《论语释疑》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20young%20chinese%20philosopher%20Wang%20Bi%20intelligent%20scholarly%20wei%20jin%20period&image_size=square',
+    teacherIds: ['laozi', 'zhuangzi'],
+    borrowIds: ['confucius'],
   },
   {
     id: 'jikang',
@@ -168,6 +192,8 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['越名教而任自然', '声无哀乐论', '养生论', '自然无为'],
     works: ['《嵇康集》', '《养生论》', '《声无哀乐论》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20chinese%20scholar%20Ji%20Kang%20playing%20guqin%20elegant%20free%20spirited&image_size=square',
+    teacherIds: ['laozi', 'zhuangzi'],
+    criticizedIds: ['confucianism'],
   },
   {
     id: 'huineng',
@@ -180,6 +206,8 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['顿悟成佛', '明心见性', '本来无一物', '平常心是道', '三无差别'],
     works: ['《六祖坛经》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20chinese%20zen%20master%20Huineng%20serene%20enlightened%20expression%20monk%20robes&image_size=square',
+    borrowIds: ['laozi', 'zhuangzi'],
+    discipleIds: ['chengyi', 'zhuxi'],
   },
   {
     id: 'chengyi',
@@ -192,6 +220,9 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['性即理', '格物穷理', '存天理灭人欲', '涵养须用敬'],
     works: ['《伊川易传》', '《遗书》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20song%20dynasty%20neo%20confucian%20scholar%20Cheng%20Yi%20serious%20scholarly%20appearance&image_size=square',
+    teacherIds: ['confucius', 'mencius'],
+    borrowIds: ['buddhism', 'taoism'],
+    discipleIds: ['zhuxi'],
   },
   {
     id: 'zhuxi',
@@ -204,6 +235,9 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['理一元论', '存天理灭人欲', '格物致知', '即物穷理', '心性论'],
     works: ['《四书章句集注》', '《近思录》', '《朱子语类》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20song%20dynasty%20neo%20confucian%20philosopher%20Zhu%20Xi%20wise%20elderly%20scholar&image_size=square',
+    teacherIds: ['chengyi', 'confucius'],
+    borrowIds: ['buddhism', 'taoism'],
+    criticizedIds: ['lujiuyuan'],
   },
   {
     id: 'lujiuyuan',
@@ -216,6 +250,10 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['心即理', '发明本心', '吾心即是宇宙', '简易工夫'],
     works: ['《象山先生全集》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20song%20dynasty%20philosopher%20Lu%20Jiuyuan%20contemplative%20wise%20expression&image_size=square',
+    teacherIds: ['confucius', 'mencius'],
+    borrowIds: ['buddhism'],
+    criticizedIds: ['zhuxi'],
+    discipleIds: ['wangyangming'],
   },
   {
     id: 'wangyangming',
@@ -228,6 +266,9 @@ export const philosophers: Philosopher[] = [
     coreIdeas: ['心即理', '致良知', '知行合一', '四句教', '万物一体'],
     works: ['《传习录》', '《大学问》', '《王文成公全书》'],
     imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20of%20ming%20dynasty%20philosopher%20Wang%20Yangming%20wise%20scholar%20warrior%20presence&image_size=square',
+    teacherIds: ['lujiuyuan'],
+    borrowIds: ['buddhism', 'taoism'],
+    criticizedIds: ['zhuxi'],
   },
 ];
 
